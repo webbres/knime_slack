@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./slack.png" type="Other" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Send Message</name>
+    
+    <shortDescription>
+        Send a slack message to a designated channel
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+			Send the given message to the specified channel on execution. Passes through the input table.
+        </intro>
+        
+        <option name="Bot OAuth token">The OAth token of the bot to post as</option>
+        <option name="Channel">The channel to post to</option>
+        <option name="Message">The message to post</option>
+
+
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input table">Any input data table.</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Output table">The verbatim input table</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+</knimeNode>
