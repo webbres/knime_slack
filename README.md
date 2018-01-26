@@ -9,11 +9,14 @@ These nodes still under development
 
 # Using the nodes
 
-## Configuration Bot OAuth token
+Create a bot in your Slack workspace see [https://api.slack.com/bot-users](https://api.slack.com/bot-users). Then provide the bots user OAuth token
+in the KNIME preferences.
+
+Each noe can override the preference with a new Bot token either allowing multiple bots in one workspace or access to bots in different workspaces.
 
 
 # Building
-
+Currently the project is built with eclipse. A minimum target platform for KNIME 3.5 is provided. 
 
 
 # Deployment
