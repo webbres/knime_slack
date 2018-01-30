@@ -4,8 +4,6 @@ Bundle-Name: Slack Integration - Node extension for KNIME Workbench
 Bundle-SymbolicName: com.sjwebb.knime.slack;singleton:=true
 Bundle-Version: 1.0.0.qualifer
 Bundle-ClassPath: .,
- libs/gson-2.8.2.jar,
- libs/hamcrest-core-1.3.jar,
  libs/javax.websocket-api-1.1.jar,
  libs/jslack-1.0.20.jar,
  libs/okio-1.13.0.jar,
@@ -17,7 +15,9 @@ Bundle-Vendor: Samuel Webb
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,
- org.knime.base
+ org.knime.base,
+ com.google.gson;bundle-version="2.7.0",
+ org.hamcrest.core;bundle-version="1.3.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.sjwebb.knime.slack.nodes.channels.get
 

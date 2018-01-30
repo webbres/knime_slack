@@ -16,9 +16,11 @@ import org.junit.Test;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
+import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
 import com.github.seratch.jslack.api.model.Attachment;
 import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Field;
+import com.github.seratch.jslack.api.model.User;
 
 public class SlackBotApiTest {
 
@@ -29,7 +31,7 @@ public class SlackBotApiTest {
 	public static void setupBefore()
 	{
 		TOKEN = System.getenv("SLACK_USER_OATH_TOKEN");
-		System.out.println("Token: " + TOKEN);
+		// System.out.println("Token: " + TOKEN);
 		api = new SlackBotApi(TOKEN);
 		
 	}
@@ -157,7 +159,26 @@ public class SlackBotApiTest {
 			e.printStackTrace();
 		}		
 	}
+
 	
+	
+	@Test 
+	public void testGetUsers()
+	{
+		String name = "Sam";
+		
+		List<User> response = null;
+		try {			
+			
+			response = api.getUsersListResponse();
+			
+			assertEquals("wrong number of users", 5, response.size());
+			
+		} catch (IOException | SlackApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
 }

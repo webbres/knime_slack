@@ -10,12 +10,17 @@ import com.github.seratch.jslack.api.methods.request.channels.ChannelsCreateRequ
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatDeleteRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
+import com.github.seratch.jslack.api.methods.request.im.ImOpenRequest;
+import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsCreateResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
+import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
+import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Attachment;
 import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.User;
 
 public class SlackBotApi {
 
@@ -79,6 +84,7 @@ public class SlackBotApi {
 		return postResponse;
 		
 	}
+	
 	/**
 	 * Post a message to the given chanel
 	 * 
@@ -93,7 +99,6 @@ public class SlackBotApi {
 		ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(
 
 				ChatPostMessageRequest.builder().token(token).channel(chanel.getId()).text(message).build());
-
 		
 		return postResponse;
 		
@@ -139,5 +144,22 @@ public class SlackBotApi {
 		return deleteResponse;
 	}
 
+	
+	public ImOpenResponse openIm(String user) throws IOException, SlackApiException {
+		
+		ImOpenResponse respone = slack.methods().imOpen(ImOpenRequest.builder().token(token).user(user).build());
+		
+		return respone;
+		
+	}
+	
+	public List<User> getUsersListResponse() throws IOException, SlackApiException {
+		
+		UsersListResponse respone = slack.methods().usersList(UsersListRequest.builder().token(token).build());
+		
+		return respone.getMembers();
+		
+		
+	}
 
 }
