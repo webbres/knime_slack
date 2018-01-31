@@ -7,7 +7,6 @@ Bundle-ClassPath: .,
  libs/javax.websocket-api-1.1.jar,
  libs/jslack-1.0.20.jar,
  libs/okio-1.13.0.jar,
- libs/slf4j-api-1.7.25.jar,
  libs/tyrus-standalone-client-1.13.jar,
  libs/okhttp-3.9.1.jar
 Bundle-Activator: com.sjwebb.knime.slack.plugin.GetChannelsNodePlugin
@@ -17,7 +16,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.repository;bundle-version="[3.0.0,4.0.0)",
  org.knime.base;bundle-version="[3.0.0,4.0.0)",
  com.google.gson;bundle-version="2.7.0",
- org.hamcrest.core;bundle-version="1.3.0"
+ org.hamcrest.core;bundle-version="1.3.0",
+ org.slf4j.api;bundle-version="1.7.2"
 Bundle-ActivationPolicy: lazy
-Export-Package: com.sjwebb.knime.slack.nodes.channels.get
 
