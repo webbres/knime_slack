@@ -27,7 +27,22 @@ The value specified in the KNIME / Slack preferences page will be used to auto p
 
 ## Nodes
 
+### Get channels
 
+Get the channels the bot user is able to see.
+
+![Send MEssage](documentation/get-channels-table.png)
+
+### Send message
+This node can be placed at the start, middle or end of a workflow as the input port is optional. Use it to define a message within the dialog to
+send upon execution. 
+
+![Send MEssage](documentation/send-message.png)
+
+
+### Send row message
+
+![Send MEssage](documentation/send-row-message-output.png)
 
 # Building and deployment
 
