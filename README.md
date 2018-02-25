@@ -4,24 +4,29 @@ This repository contains a KNIME plugin which provides nodes interacting with Sl
 It uses the [jslack package](https://github.com/seratch/jslack) to interact with Slack. 
 
 # Status
-These nodes still under development
+
+Current capabilities include:
+* Get channel list
+* Post single message to Slack from KNIME where channel and message are specified in the dialog
+* Use values from a table to post multiple messages to slack
 
 
 # Using the nodes
 
 Create a bot in your Slack workspace see [https://api.slack.com/bot-users](https://api.slack.com/bot-users). Then provide the bots user OAuth token
-in the KNIME preferences.
+in the KNIME preferences. See instructions from the [jslack library](https://github.com/seratch/jslack#setting-up-oauth--permissions-for-it).
 
-Each noe can override the preference with a new Bot token either allowing multiple bots in one workspace or access to bots in different workspaces.
-
-
-# Building
-Currently the project is built with eclipse. A minimum target platform for KNIME 3.5 is provided. 
+Each node can override the preference with a new Bot token either allowing multiple bots in one Slack workspace or access to bots in different Slack workspaces.
 
 
-# Deployment
+# Building and deployment
 
-This plugin is not currently available via an Eclipse P2 site.
+The nodes can be build manually in eclipse or via buckminster. The nodes are currently available in the KNIME community update site:
+
+http://update.knime.com/community-contributions/trunk
+
+![P2 Site](/documentation/p2-site.png)
+
 
 # Running tests
 
