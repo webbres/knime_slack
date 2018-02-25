@@ -4,24 +4,54 @@ This repository contains a KNIME plugin which provides nodes interacting with Sl
 It uses the [jslack package](https://github.com/seratch/jslack) to interact with Slack. 
 
 # Status
-These nodes still under development
+
+Current capabilities include:
+* Get channel list
+* Post single message to Slack from KNIME where channel and message are specified in the dialog
+* Use values from a table to post multiple messages to slack
 
 
 # Using the nodes
 
 Create a bot in your Slack workspace see [https://api.slack.com/bot-users](https://api.slack.com/bot-users). Then provide the bots user OAuth token
-in the KNIME preferences.
+in the KNIME preferences. See instructions from the [jslack library](https://github.com/seratch/jslack#setting-up-oauth--permissions-for-it).
 
-Each noe can override the preference with a new Bot token either allowing multiple bots in one workspace or access to bots in different workspaces.
+Each node can override the preference with a new Bot token either allowing multiple bots in one Slack workspace or access to bots in different Slack workspaces.
+
+## Preferences
+
+The value specified in the KNIME / Slack preferences page will be used to auto populate the OAth token setting in each node.
+
+![Preferences](documentation/preferences.png)
 
 
-# Building
-Currently the project is built with eclipse. A minimum target platform for KNIME 3.5 is provided. 
+## Nodes
+
+### Get channels
+
+Get the channels the bot user is able to see.
+
+![Send MEssage](documentation/get-channels-table.png)
+
+### Send message
+This node can be placed at the start, middle or end of a workflow as the input port is optional. Use it to define a message within the dialog to
+send upon execution. 
+
+![Send MEssage](documentation/send-message.png)
 
 
-# Deployment
+### Send row message
 
-This plugin is not currently available via an Eclipse P2 site.
+![Send MEssage](documentation/send-row-message-output.png)
+
+# Building and deployment
+
+The nodes can be build manually in eclipse or via buckminster. The nodes are currently available in the KNIME community update site:
+
+http://update.knime.com/community-contributions/trunk
+
+![P2 Site](documentation/p2-site.PNG)
+
 
 # Running tests
 
