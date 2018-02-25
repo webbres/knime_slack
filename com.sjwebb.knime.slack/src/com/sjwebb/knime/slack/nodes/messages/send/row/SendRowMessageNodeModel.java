@@ -18,6 +18,7 @@ import org.knime.core.node.InvalidSettingsException;
 
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
+import com.google.gson.GsonBuilder;
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 import com.sjwebb.knime.slack.util.SlackBotApiFactory;
@@ -85,7 +86,10 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 
 	private void addRow(BufferedDataContainer container, DataRow row, ChatPostMessageResponse response) {
 		
-		DataRow outRow = new AppendedColumnRow(row, StringCellFactory.create(response.toString()));
+		GsonBuilder builder = new GsonBuilder();
+		String out = builder.create().toJson(response);
+		
+		DataRow outRow = new AppendedColumnRow(row, StringCellFactory.create(out));
 		container.addRowToTable(outRow);
 		
 	}
