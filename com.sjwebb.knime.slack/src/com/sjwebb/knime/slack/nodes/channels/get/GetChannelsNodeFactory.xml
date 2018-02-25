@@ -9,16 +9,14 @@
     <fullDescription>
         <intro>        
         		Get the channels from the connected Slack workspace.
-				The oath token(s) must be specified in the KNIME preferences.
 		</intro>
 		
-		<option name="Bot OAuth token">The OAuth token for the bot to use.</option>
+		<option name="Bot OAuth token">The OAuth token for the bot to use. Initially populated based on the preferences</option>
 
     </fullDescription>
     
     <ports>
         <outPort index="0" name="Slack Channels">The identified Slack Channels</outPort>
-        <!-- possibly more output ports here-->
     </ports>    
 
 </knimeNode>
