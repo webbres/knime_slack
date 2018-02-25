@@ -18,6 +18,16 @@ in the KNIME preferences. See instructions from the [jslack library](https://git
 
 Each node can override the preference with a new Bot token either allowing multiple bots in one Slack workspace or access to bots in different Slack workspaces.
 
+## Preferences
+
+The value specified in the KNIME / Slack preferences page will be used to auto populate the OAth token setting in each node.
+
+![Preferences](documentation/preferences.png)
+
+
+## Nodes
+
+
 
 # Building and deployment
 
