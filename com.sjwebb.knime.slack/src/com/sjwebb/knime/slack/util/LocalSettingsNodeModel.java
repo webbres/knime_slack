@@ -24,13 +24,17 @@ import org.knime.core.node.port.PortType;
  * 
  * @author Samuel, Lhasa Limited
  * @since 1.2.000
- * @param <T> 	An instance of {@link NodeSettingCollection} which should be used for handling of tall the 
+ * @param <T> 	An instance of {@link NodeSettingCollection} which should be used for handling of all the 
  * 				node settings.
  */
 public abstract class LocalSettingsNodeModel<T extends NodeSettingCollection> extends NodeModel
 {
 
 	protected T localSettings;
+	
+	public LocalSettingsNodeModel() {
+		this(1, 1);
+	}
 	
 	protected LocalSettingsNodeModel(int nrInDataPorts, int nrOutDataPorts)
 	{
@@ -85,6 +89,10 @@ public abstract class LocalSettingsNodeModel<T extends NodeSettingCollection> ex
 		localSettings.loadValidatedSettingsFrom(settings);
 	}
 	
+	/**
+	 * Get the settings for the node
+	 * @return
+	 */
 	public T getSettingsCollection()
 	{
 		return localSettings;
@@ -104,6 +112,12 @@ public abstract class LocalSettingsNodeModel<T extends NodeSettingCollection> ex
 			throws IOException, CanceledExecutionException
 	{
 		
+		
+	}
+	
+	@Override
+	protected void reset()
+	{
 		
 	}
 }

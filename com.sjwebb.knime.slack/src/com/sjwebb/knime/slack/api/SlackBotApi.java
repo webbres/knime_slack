@@ -117,10 +117,10 @@ public class SlackBotApi {
 	{
 		List<Channel> channels = getChannelList();
 		
-		Channel channel = channels.stream()
-		        .filter(c -> c.getName().equals(name)).findFirst().get();
+		Optional<Channel> channel = channels.stream()
+		        .filter(c -> c.getName().equals(name)).findFirst();
 		
-		return Optional.ofNullable(channel);
+		return channel;
 	}
 	
 	/**
