@@ -1,5 +1,6 @@
 package com.sjwebb.knime.slack.nodes.messages.send.row;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.knime.core.data.DataCell;
@@ -11,6 +12,7 @@ import org.knime.core.data.MissingCell;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.append.AppendedColumnRow;
 import org.knime.core.data.def.StringCell.StringCellFactory;
+import org.knime.core.data.json.JSONCellFactory;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
@@ -42,13 +44,13 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 
 		int channelIndex = in.getSpec().findColumnIndex(localSettings.getChannelColumnName());
 		int messageIndex = in.getSpec().findColumnIndex(localSettings.getMessageColumnName());
-		
+
 		BufferedDataContainer container = exec.createDataContainer(createOutputSpec(in.getSpec()));
 
 		for (DataRow row : in) {
-			
+
 			SlackBotApi api;
-			
+
 			try {
 				api = SlackBotApiFactory.createFromSettings(localSettings);
 			} catch (Exception e) {
@@ -70,8 +72,7 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 				if (resolvedChannel.isPresent()) {
 					ChatPostMessageResponse response = api.postMessage(resolvedChannel.get(), message);
 					addRow(container, row, response);
-				} else
-				{
+				} else {
 					addErrorRow(container, row, "Channel does not exist");
 				}
 			}
@@ -79,23 +80,32 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 		}
 
 		container.close();
-		
-		
-		return new BufferedDataTable[] {container.getTable()};
+
+		return new BufferedDataTable[] { container.getTable() };
 	}
 
 	private void addRow(BufferedDataContainer container, DataRow row, ChatPostMessageResponse response) {
-		
+
 		GsonBuilder builder = new GsonBuilder();
 		String out = builder.create().toJson(response);
-		
-		DataRow outRow = new AppendedColumnRow(row, StringCellFactory.create(out));
+
+		DataCell outCell;
+		try {
+			outCell = JSONCellFactory.create(out, false);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			getLogger().error(e);
+			outCell = new MissingCell("Failed to generated JSON value: " + e.getMessage());
+		}
+
+		DataRow outRow = new AppendedColumnRow(row, outCell);
 		container.addRowToTable(outRow);
-		
+
 	}
 
 	private void addErrorRow(BufferedDataContainer container, DataRow row, String message) {
-	
+
 		DataRow outRow = new AppendedColumnRow(row, new MissingCell(message));
 		container.addRowToTable(outRow);
 	}
@@ -113,7 +123,7 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 		DataTableSpecCreator creator = new DataTableSpecCreator(inSpec);
 
 		creator.addColumns(
-				new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(inSpec, "Response"), StringCellFactory.TYPE)
+				new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(inSpec, "Response"), JSONCellFactory.TYPE)
 						.createSpec());
 
 		return creator.createSpec();
