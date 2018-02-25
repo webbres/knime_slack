@@ -3,9 +3,13 @@ package com.sjwebb.knime.slack.nodes.messages.send;
 import java.util.Optional;
 
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataTableSpecCreator;
+import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 
 import com.github.seratch.jslack.api.model.Channel;
 import com.sjwebb.knime.slack.api.SlackBotApi;
@@ -19,13 +23,16 @@ import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
  */
 public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessageSettings> {
 
+
+	
 	/**
 	 * Constructor for the node model.
 	 */
-	protected SendMessageNodeModel() {
-		super(1, 1);
+	protected SendMessageNodeModel() {		
+		super(new PortType[] {PortTypeRegistry.getInstance().getPortType(BufferedDataTable.class, true)}, 
+				new PortType[] {PortTypeRegistry.getInstance().getPortType(BufferedDataTable.class, false)});
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -44,9 +51,35 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 		
 		api.postMessage(channel.get(), localSettings.getMessage());
 		
-		return inData;
+		
+		BufferedDataTable[] out;
+		
+		if(inData.length == 0 || inData[0] == null)
+		{
+			out = new BufferedDataTable[] {createEmptyTable(exec)};
+		} else
+		{
+			out = inData;
+		}
+		
+		return out;
 	}
 
+
+	private BufferedDataTable createEmptyTable(ExecutionContext exec) 
+	{
+		BufferedDataContainer container = exec.createDataContainer(getEmptySpec());
+		container.close();
+		
+		
+		return container.getTable();
+	}
+
+	private DataTableSpec getEmptySpec() {
+		
+		DataTableSpecCreator creator = new DataTableSpecCreator();
+		return creator.createSpec();
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +95,7 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
 
-		return inSpecs;
+		return (inSpecs.length == 0 || inSpecs[0] == null) ? new DataTableSpec[] {getEmptySpec()} : inSpecs;
 	}
 
 }
