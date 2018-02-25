@@ -25,7 +25,7 @@ The nodes can be build manually in eclipse or via buckminster. The nodes are cur
 
 http://update.knime.com/community-contributions/trunk
 
-![P2 Site](/documentation/p2-site.png)
+![P2 Site](documentation/p2-site.PNG)
 
 
 # Running tests
