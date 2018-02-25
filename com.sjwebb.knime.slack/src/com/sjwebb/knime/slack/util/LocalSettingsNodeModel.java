@@ -66,6 +66,7 @@ public abstract class LocalSettingsNodeModel<T extends NodeSettingCollection> ex
 	protected LocalSettingsNodeModel(PortType[] inPortTypes, PortType[] outPortTypes)
 	{
 		super(inPortTypes, outPortTypes);
+		setSettingsObject();
 	}
 
 

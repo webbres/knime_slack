@@ -8,7 +8,7 @@
     
     <fullDescription>
         <intro>
-			Send the given message to the specified channel on execution. Passes through the input table.
+			Send the given message to the specified channel on execution. No input table needs to be specified, if one is given it is passed through verbatim. 
         </intro>
         
         <option name="Bot OAuth token">The OAth token of the bot to post as</option>
@@ -21,7 +21,7 @@
     <ports>
         <inPort index="0" name="Input table">Any input data table.</inPort>
         <!-- possibly more input ports here-->
-        <outPort index="0" name="Output table">The verbatim input table</outPort>
+        <outPort index="0" name="Output table">The verbatim input table or an empty table if no input provided.</outPort>
         <!-- possibly more output ports here-->
     </ports>    
 </knimeNode>
