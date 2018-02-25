@@ -16,19 +16,14 @@
    <extension point="org.knime.workbench.repository.nodes">
       <node category-path="/community/c.s.k.slack" factory-class="com.sjwebb.knime.slack.nodes.channels.get.GetChannelsNodeFactory" id="com.sjwebb.knime.slack.nodes.channels.get.GetChannelsNodeFactory"/>
    <node category-path="/community/c.s.k.slack" factory-class="com.sjwebb.knime.slack.nodes.messages.send.SendMessageNodeFactory" id="com.sjwebb.knime.slack.nodes.messages.send.SendMessageNodeFactory"/>
+<node category-path="/community/c.s.k.slack" factory-class="com.sjwebb.knime.slack.nodes.messages.send.row.SendRowMessageNodeFactory" id="com.sjwebb.knime.slack.nodes.messages.send.row.SendRowMessageNodeFactory"/>
 </extension>
    <extension point="org.eclipse.ui.preferencePages">
       <page category="org.knime.workbench.ui.preferences" class="com.sjwebb.knime.slack.preferences.SlackPreferencePage" id="com.sjwebb.knime.slack.preferences" name="Slack Preference Page">
       </page>
    </extension>
-   <extension
-         point="org.knime.workbench.repository.categories">
-      <category
-            icon="icons/slack.png"
-            level-id="c.s.k.slack"
-            locked="true"
-            name="Slack"
-            path="/community/">
+   <extension point="org.knime.workbench.repository.categories">
+      <category icon="icons/slack.png" level-id="c.s.k.slack" locked="true" name="Slack" path="/community/">
       </category>
    </extension>
    
