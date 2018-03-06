@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
-Bundle-SymbolicName: com.sjwebb.knime.slack.test
+Bundle-SymbolicName: com.sjwebb.knime.slack.test;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Sam Webb
 Fragment-Host: com.sjwebb.knime.slack;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.junit;bundle-version="4.12.0"
+Require-Bundle: org.junit;bundle-version="4.12.0",
+ org.knime.testing;bundle-version="3.5.0"
