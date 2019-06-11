@@ -3,6 +3,7 @@ package com.sjwebb.knime.slack.api;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -51,20 +52,42 @@ public class SlackBotApi {
 	}
 
 	/**
-	 * Get the list of channels
+	 * Get the list of non archived channels
 	 * 
 	 * @return
 	 * @throws IOException
 	 * @throws SlackApiException
 	 */
 	public List<Channel> getChannelList() throws IOException, SlackApiException {
+		return getChannelList(false);
+	}
+
+	/**
+	 * Get the list of channels
+	 * 
+	 * @param keepArchived should archived channels be kept
+	 * @return
+	 * @throws IOException
+	 * @throws SlackApiException
+	 */
+	public List<Channel> getChannelList(boolean keepArchived) throws IOException, SlackApiException {
 		ChannelsListResponse channelsResponse = slack.methods()
 				.channelsList(ChannelsListRequest.builder().token(token).build());
 
 
-		return channelsResponse.getChannels();
-	}
+		List<Channel> channels;
+		
+		if(keepArchived)
+		{
+			channels = channelsResponse.getChannels();
+		} else
+		{
+			channels = channelsResponse.getChannels().stream().filter(v -> !v.isArchived()).collect(Collectors.toList());
+		}
 
+		return channels;
+	}
+	
 	/**
 	 * Post a message to the given chanel
 	 * 
