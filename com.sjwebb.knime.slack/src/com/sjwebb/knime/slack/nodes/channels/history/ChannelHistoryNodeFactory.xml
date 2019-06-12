@@ -10,7 +10,7 @@
         <intro>Gets the history of the specified channel.
         
         <p>
-        	<b>The KNIMe app in the slack workspace will require the channel:history scope for this node to execute.</b>
+        	<b>The KNIME app in the slack workspace will require the channel:history scope for this node to execute.</b>
         </p>
         </intro>
         

@@ -9,6 +9,10 @@
     <fullDescription>
         <intro>        
         		Get the users from the connected Slack workspace.
+        		
+        <p>
+        	<b>The KNIME app in the slack workspace will require the users:read scope for this node to execute.</b>
+        </p>
 		</intro>
 		
 		<option name="Bot OAuth token">The OAuth token for the bot to use. Initially populated based on the preferences</option>
