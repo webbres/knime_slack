@@ -11,14 +11,13 @@ import com.github.seratch.jslack.api.methods.request.channels.ChannelsCreateRequ
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatDeleteRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
-import com.github.seratch.jslack.api.methods.request.conversations.ConversationsHistoryRequest;
 import com.github.seratch.jslack.api.methods.request.im.ImOpenRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsCreateResponse;
+import com.github.seratch.jslack.api.methods.response.channels.ChannelsHistoryResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
-import com.github.seratch.jslack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Attachment;
@@ -26,8 +25,6 @@ import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Message;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.shortcut.Shortcut;
-import com.github.seratch.jslack.shortcut.model.ApiToken;
-import com.github.seratch.jslack.shortcut.model.ChannelName;
 
 public class SlackBotApi {
 
@@ -199,23 +196,41 @@ public class SlackBotApi {
 	}
 	
 	
-	public List<Message> getChannelMessages(Channel channel, int limit) throws IOException, SlackApiException {
+//	public List<Message> getChannelMessages(Channel channel, int limit) throws IOException, SlackApiException {
+//		
+//		Shortcut shortcut = slack.shortcut(ApiToken.of(token));
+//		
+//		return shortcut.findRecentMessagesByName(ChannelName.of(channel.getName()), limit);
+//		
+////		return shortcut.findRecentMessagesByName(channel.getName());
+////		
+////		ConversationsHistoryResponse historyResponse = slack.methods().conversationsHistory(
+////                ConversationsHistoryRequest.builder()
+////                        .token(token)
+////                        .channel(channel.getId())
+////                        .limit(limit)
+////                        .build());
+////		
+////		if(historyResponse.isOk() != true)
+////			throw new IOException("Failed to get history");
+////		
+////		return historyResponse.getMessages();
+//	}
+
+	public List<Message> getChannelMessages(Channel channel, int limit) throws Exception
+	{
+		ChannelsHistoryResponse history = slack.methods().channelsHistory(req -> req
+                .token(token)
+                .channel(channel.getId())
+                .count(limit)
+                .build());
 		
-		Shortcut shortcut = slack.shortcut(ApiToken.of(token));
+		if(!history.isOk())
+		{
+			throw new Exception(history.getError() + " - needed: " + history.getNeeded());
+		}
 		
-		return shortcut.findRecentMessagesByName(ChannelName.of("general"));
-//		
-//		ConversationsHistoryResponse historyResponse = slack.methods().conversationsHistory(
-//                ConversationsHistoryRequest.builder()
-//                        .token(token)
-//                        .channel(channel.getId())
-//                        .limit(limit)
-//                        .build());
-//		
-//		if(historyResponse.isOk() != true)
-//			throw new IOException("Failed to get history");
-//		
-//		return historyResponse.getMessages();
+		return history.getMessages();
 	}
 
 }

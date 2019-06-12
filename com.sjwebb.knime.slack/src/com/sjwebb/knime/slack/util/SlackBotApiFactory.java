@@ -26,7 +26,7 @@ public class SlackBotApiFactory {
 	public static String getDefaultOAuthToken()
 	{
 		IPreferenceStore prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sjwebb.knime.slack.preferences");
-		return prefs.getString(SlackPreferencePage.OATH_TOKEN);		
+		return prefs.getString(SlackPreferencePage.OAUTH_TOKEN);		
 	}
 
 }
