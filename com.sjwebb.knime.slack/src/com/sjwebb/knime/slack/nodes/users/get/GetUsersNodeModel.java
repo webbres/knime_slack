@@ -54,7 +54,14 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
 			throw new Exception("Could not create API object. Do you have a valid token?", e);
 		}
 		
-		List<User> users = api.getUsers();
+		List<User> users;
+		try {
+			users = api.getUsers();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw e;
+		}
 		
 		BufferedDataTable table = createOutputTable(exec, users);
 		

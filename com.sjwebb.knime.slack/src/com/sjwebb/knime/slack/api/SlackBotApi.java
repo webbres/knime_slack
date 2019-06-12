@@ -184,12 +184,16 @@ public class SlackBotApi {
 	 * Get all of the users from the workspace
 	 * 
 	 * @return
-	 * @throws IOException
-	 * @throws SlackApiException
+	 * @throws Exception 
 	 */
-	public List<User> getUsers() throws IOException, SlackApiException {
+	public List<User> getUsers() throws Exception {
 		
 		UsersListResponse respone = slack.methods().usersList(UsersListRequest.builder().token(token).build());
+		
+		if(!respone.isOk())
+		{
+			throw new Exception(respone.getError() + " - needed: " + respone.getNeeded());
+		}
 		
 		return respone.getMembers();
 		
