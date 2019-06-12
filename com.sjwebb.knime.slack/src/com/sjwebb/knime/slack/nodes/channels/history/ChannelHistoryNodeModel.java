@@ -55,7 +55,13 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 			throw new Exception("Provided channel name of " + localSettings.getChannelName() + " is not valid");
 		}
 
-		List<Message> messages = api.getChannelMessages(channel.get(), 10);
+		List<Message> messages;
+		try {
+			messages = api.getChannelMessages(channel.get(), 10);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 
 		BufferedDataTable table = createOutputTable(exec, messages);
 
@@ -108,7 +114,6 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
 
-		// TODO: generated method stub
 		return new DataTableSpec[] { createOutputSpec() };
 	}
 
