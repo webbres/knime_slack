@@ -8,6 +8,10 @@
    <description url="https://github.com/webbres/knime_slack/">
       Integration of some Slack interaction for KNIME
    </description>
+      
+   <copyright>
+      Copyright by Sam Webb
+   </copyright>
 
    <license url="https://github.com/webbres/knime_slack/blob/master/LICENSE.txt">
       GNU GENERAL PUBLIC LICENSE
