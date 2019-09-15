@@ -26,7 +26,7 @@ public class ChannelHistoryNodeFactory
      */
     @Override
     public int getNrNodeViews() {
-        return 1;
+        return 0;
     }
 
     /**

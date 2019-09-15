@@ -75,19 +75,20 @@ public class SlackBotApi {
 	 * @throws SlackApiException
 	 */
 	public List<Channel> getChannelList(boolean keepArchived) throws IOException, SlackApiException {
-		ChannelsListResponse channelsResponse = slack.methods()
-				.channelsList(ChannelsListRequest.builder().token(token).build());
-
-
-		List<Channel> channels;
 		
-		if(keepArchived)
-		{
-			channels = channelsResponse.getChannels();
-		} else
-		{
-			channels = channelsResponse.getChannels().stream().filter(v -> !v.isArchived()).collect(Collectors.toList());
-		}
+		ChannelsListResponse channelsResponse = slack.methods()
+				.channelsList(ChannelsListRequest.builder().excludeArchived(!keepArchived).token(token).build());
+
+
+		List<Channel> channels = channelsResponse.getChannels();
+		
+//		if(keepArchived)
+//		{
+//			channels = channelsResponse.getChannels();
+//		} else
+//		{
+//			channels = channelsResponse.getChannels().stream().filter(v -> !v.isArchived()).collect(Collectors.toList());
+//		}
 
 		return channels;
 	}
