@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/jslack-api-client-1.6.0-RC1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jslack-api-model-1.6.0-RC1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jslack-app-backend-1.6.0-RC1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okhttp-3.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/javax.websocket-api-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jslack-1.0.20.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okio-1.13.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/tyrus-standalone-client-1.13.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>

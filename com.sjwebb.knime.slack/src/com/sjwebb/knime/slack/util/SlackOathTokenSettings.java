@@ -61,7 +61,7 @@ public class SlackOathTokenSettings extends NodeSettingCollection {
 	 */
 	public DialogComponent getDialogCompoinentOathToken()
 	{
-		return new DialogComponentString(getSetting(OATH_TOKEN, SettingsModelString.class), "Bot OAuth token");
+		return new DialogComponentString(getSetting(OATH_TOKEN, SettingsModelString.class), "OAuth token");
 	}
 
 }

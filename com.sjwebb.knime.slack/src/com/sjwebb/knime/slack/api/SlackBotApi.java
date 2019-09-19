@@ -1,6 +1,7 @@
 package com.sjwebb.knime.slack.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,19 +14,27 @@ import com.github.seratch.jslack.api.methods.request.chat.ChatDeleteRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
 import com.github.seratch.jslack.api.methods.request.im.ImOpenRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
+import com.github.seratch.jslack.api.methods.response.auth.AuthTestResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsCreateResponse;
+import com.github.seratch.jslack.api.methods.response.channels.ChannelsHistoryResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
+import com.github.seratch.jslack.api.methods.response.conversations.ConversationsListResponse;
 import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Attachment;
 import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.Conversation;
+import com.github.seratch.jslack.api.model.ConversationType;
+import com.github.seratch.jslack.api.model.Message;
 import com.github.seratch.jslack.api.model.User;
+import com.github.seratch.jslack.shortcut.Shortcut;
 
 public class SlackBotApi {
 
 	private Slack slack;
+	private Shortcut shortcut;
 
 	private String token;
 
@@ -34,6 +43,11 @@ public class SlackBotApi {
 		this.token = token;
 	}
 
+	public void checkAuth() throws IOException, SlackApiException
+	{
+		AuthTestResponse response = slack.methods().authTest(req -> req.token(token).build());
+	}
+	
 	/**
 	 * Create a channel
 	 * 
@@ -71,21 +85,41 @@ public class SlackBotApi {
 	 * @throws SlackApiException
 	 */
 	public List<Channel> getChannelList(boolean keepArchived) throws IOException, SlackApiException {
-		ChannelsListResponse channelsResponse = slack.methods()
-				.channelsList(ChannelsListRequest.builder().token(token).build());
-
-
-		List<Channel> channels;
 		
-		if(keepArchived)
-		{
-			channels = channelsResponse.getChannels();
-		} else
-		{
-			channels = channelsResponse.getChannels().stream().filter(v -> !v.isArchived()).collect(Collectors.toList());
-		}
+		ChannelsListResponse channelsResponse = slack.methods()
+				.channelsList(ChannelsListRequest.builder().excludeArchived(!keepArchived).token(token).build());
+
+
+		List<Channel> channels = channelsResponse.getChannels();
+		
+//		if(keepArchived)
+//		{
+//			channels = channelsResponse.getChannels();
+//		} else
+//		{
+//			channels = channelsResponse.getChannels().stream().filter(v -> !v.isArchived()).collect(Collectors.toList());
+//		}
 
 		return channels;
+	}
+	public List<String> getChannelNamesViaConversations(boolean keepArchives) throws Exception
+	{
+		
+		List<ConversationType> types = new ArrayList<ConversationType>();
+		types.add(ConversationType.PRIVATE_CHANNEL);
+		types.add(ConversationType.PUBLIC_CHANNEL);
+		
+		ConversationsListResponse listResponse = 
+				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(!keepArchives).build());
+		
+		if(!listResponse.isOk())
+		{
+			throw new Exception("API call failed: " + listResponse.getError());
+		}
+		
+		List<Conversation> conversations = listResponse.getChannels();
+		
+		return conversations.stream().map(c -> c.getName()).collect(Collectors.toList());
 	}
 	
 	/**
@@ -176,13 +210,61 @@ public class SlackBotApi {
 		
 	}
 	
-	public List<User> getUsersListResponse() throws IOException, SlackApiException {
+	/**
+	 * Get all of the users from the workspace
+	 * 
+	 * @return
+	 * @throws Exception 
+	 */
+	public List<User> getUsers() throws Exception {
 		
 		UsersListResponse respone = slack.methods().usersList(UsersListRequest.builder().token(token).build());
 		
+		if(!respone.isOk())
+		{
+			throw new Exception(respone.getError() + " - needed: " + respone.getNeeded());
+		}
+		
 		return respone.getMembers();
 		
+	}
+	
+	
+//	public List<Message> getChannelMessages(Channel channel, int limit) throws IOException, SlackApiException {
+//		
+//		Shortcut shortcut = slack.shortcut(ApiToken.of(token));
+//		
+//		return shortcut.findRecentMessagesByName(ChannelName.of(channel.getName()), limit);
+//		
+////		return shortcut.findRecentMessagesByName(channel.getName());
+////		
+////		ConversationsHistoryResponse historyResponse = slack.methods().conversationsHistory(
+////                ConversationsHistoryRequest.builder()
+////                        .token(token)
+////                        .channel(channel.getId())
+////                        .limit(limit)
+////                        .build());
+////		
+////		if(historyResponse.isOk() != true)
+////			throw new IOException("Failed to get history");
+////		
+////		return historyResponse.getMessages();
+//	}
+
+	public List<Message> getChannelMessages(Channel channel, int limit) throws Exception
+	{
+		ChannelsHistoryResponse history = slack.methods().channelsHistory(req -> req
+                .token(token)
+                .channel(channel.getId())
+                .count(limit)
+                .build());
 		
+		if(!history.isOk())
+		{
+			throw new Exception(history.getError() + " - needed: " + history.getNeeded());
+		}
+		
+		return history.getMessages();
 	}
 
 }
