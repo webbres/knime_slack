@@ -8,7 +8,10 @@
     
     <fullDescription>
         <intro>        
-        		Get the channels from the connected Slack workspace.
+        	Get the channels from the connected Slack workspace.
+        		
+        	See <a href="https://api.slack.com/methods/conversations.list">https://api.slack.com/methods/conversations.list</a> for details
+        	on the API call and required permissions.
 		</intro>
 		
 		<option name="Bot OAuth token">The OAuth token for the bot to use. Initially populated based on the preferences</option>
