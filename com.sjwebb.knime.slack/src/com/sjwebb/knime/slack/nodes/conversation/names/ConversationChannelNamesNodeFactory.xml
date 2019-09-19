@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./default.png" type="Source" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Channel Names</name>
+    
+    <shortDescription>
+        Get public and private channel names
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+        
+         Uses the conversations API to get the channel names including private channels the auth token provided
+        grants access to. 
+        
+
+		See <a href="https://api.slack.com/methods/conversations.list">https://api.slack.com/methods/conversations.list</a>
+        
+        </intro>
+        
+        <option name="OAuth token">The OAth token of the bot to post as</option>
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Channel names">The available channel names</outPort>
+    </ports>    
+</knimeNode>

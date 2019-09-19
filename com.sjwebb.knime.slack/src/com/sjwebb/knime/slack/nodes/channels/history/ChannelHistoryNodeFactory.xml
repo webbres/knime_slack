@@ -15,7 +15,7 @@
         </intro>
         
         
-        <option name="Bot OAuth token">The OAth token of the bot to post as</option>
+        <option name="OAuth token">The OAth token of the bot to post as</option>
         <option name="Channel">The channel to post to</option>
     </fullDescription>
     

@@ -1,6 +1,7 @@
 package com.sjwebb.knime.slack.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,15 +14,19 @@ import com.github.seratch.jslack.api.methods.request.chat.ChatDeleteRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
 import com.github.seratch.jslack.api.methods.request.im.ImOpenRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
+import com.github.seratch.jslack.api.methods.response.auth.AuthTestResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsCreateResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsHistoryResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
+import com.github.seratch.jslack.api.methods.response.conversations.ConversationsListResponse;
 import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Attachment;
 import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.Conversation;
+import com.github.seratch.jslack.api.model.ConversationType;
 import com.github.seratch.jslack.api.model.Message;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.shortcut.Shortcut;
@@ -38,6 +43,11 @@ public class SlackBotApi {
 		this.token = token;
 	}
 
+	public void checkAuth() throws IOException, SlackApiException
+	{
+		AuthTestResponse response = slack.methods().authTest(req -> req.token(token).build());
+	}
+	
 	/**
 	 * Create a channel
 	 * 
@@ -91,6 +101,25 @@ public class SlackBotApi {
 //		}
 
 		return channels;
+	}
+	public List<String> getChannelNamesViaConversations(boolean keepArchives) throws Exception
+	{
+		
+		List<ConversationType> types = new ArrayList<ConversationType>();
+		types.add(ConversationType.PRIVATE_CHANNEL);
+		types.add(ConversationType.PUBLIC_CHANNEL);
+		
+		ConversationsListResponse listResponse = 
+				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(!keepArchives).build());
+		
+		if(!listResponse.isOk())
+		{
+			throw new Exception("API call failed: " + listResponse.getError());
+		}
+		
+		List<Conversation> conversations = listResponse.getChannels();
+		
+		return conversations.stream().map(c -> c.getName()).collect(Collectors.toList());
 	}
 	
 	/**
