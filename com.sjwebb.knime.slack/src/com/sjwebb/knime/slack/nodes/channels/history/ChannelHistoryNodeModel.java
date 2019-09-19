@@ -48,6 +48,8 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 			throws Exception {
 
 		SlackBotApi api = SlackBotApiFactory.createFromSettings(localSettings);
+		
+		getLogger().debug(api.checkAuth());
 
 		Optional<Channel> channel = api.findChannelWithName(localSettings.getChannelName());
 
@@ -56,7 +58,9 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 		}
 
 		List<Message> messages;
-		try {
+		
+		try 
+		{
 			messages = api.getChannelMessages(channel.get(), 10);
 		} catch (Exception e) {
 			e.printStackTrace();

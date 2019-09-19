@@ -8,6 +8,7 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.RowKey;
+import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.IntCell.IntCellFactory;
 import org.knime.core.data.def.StringCell.StringCellFactory;
@@ -16,7 +17,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 
-import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.Conversation;
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 import com.sjwebb.knime.slack.util.SlackBotApiFactory;
@@ -47,12 +48,14 @@ public class GetChannelsNodeModel extends LocalSettingsNodeModel<SlackOathTokenS
 
 		SlackBotApi api = SlackBotApiFactory.createFromSettings(localSettings);
 
-		List<Channel> channels = api.getChannelList();
+//		List<Channel> channels = api.getChannelList();
+		List<Conversation> conversations = api.getConversations(false, true);
 
 		BufferedDataContainer container = exec.createDataContainer(createOutputSpec());
 
-		for (Channel channel : channels) {
-			container.addRowToTable(createRow(channel, container.size()));
+		
+		for (Conversation conv : conversations) {
+			container.addRowToTable(createRow(conv, container.size()));
 		}
 
 		container.close();
@@ -60,14 +63,16 @@ public class GetChannelsNodeModel extends LocalSettingsNodeModel<SlackOathTokenS
 		return new BufferedDataTable[] { container.getTable() };
 	}
 
-	private DataRow createRow(Channel channel, long size) {
-		DataCell[] cells = new DataCell[6];
+	private DataRow createRow(Conversation channel, long size) {
+		DataCell[] cells = new DataCell[8];
 		cells[0] = StringCellFactory.create(channel.getName());
 		cells[1] = StringCellFactory.create(channel.getId());
 		cells[2] = StringCellFactory.create(channel.getCreator());
 		cells[3] = IntCellFactory.create(channel.getCreated());
 		cells[4] = StringCellFactory.create(channel.getPurpose().getValue());
 		cells[5] = StringCellFactory.create(channel.getTopic().getValue());
+		cells[6] = BooleanCellFactory.create(channel.isPrivate());
+		cells[7] = BooleanCellFactory.create(channel.isArchived());
 
 		DefaultRow row = new DefaultRow(new RowKey("Row" + size), cells);
 
@@ -104,6 +109,8 @@ public class GetChannelsNodeModel extends LocalSettingsNodeModel<SlackOathTokenS
 		creator.addColumns(new DataColumnSpecCreator("Created", IntCellFactory.TYPE).createSpec());
 		creator.addColumns(new DataColumnSpecCreator("Purpose", StringCellFactory.TYPE).createSpec());
 		creator.addColumns(new DataColumnSpecCreator("Topic", StringCellFactory.TYPE).createSpec());
+		creator.addColumns(new DataColumnSpecCreator("Private", BooleanCellFactory.TYPE).createSpec());
+		creator.addColumns(new DataColumnSpecCreator("Archived", BooleanCellFactory.TYPE).createSpec());
 
 		return creator.createSpec();
 	}
