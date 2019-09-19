@@ -203,6 +203,7 @@ public class SlackBotApi {
 	 * @return
 	 * @throws IOException
 	 * @throws SlackApiException
+	 * @deprecated - this is old API and should be replaced with the conversations API
 	 */
 	public Optional<Channel> findChannelWithName(String name) throws IOException, SlackApiException
 	{
@@ -299,6 +300,43 @@ public class SlackBotApi {
 		}
 		
 		return history.getMessages();
+	}
+	
+	public String sendMessageToChannel(String channel, String message) throws IOException, SlackApiException
+	{
+		List<ConversationType> types = new ArrayList<ConversationType>();
+		types.add(ConversationType.PRIVATE_CHANNEL);
+		types.add(ConversationType.PUBLIC_CHANNEL);
+		
+		ConversationsListResponse listResponse = 
+				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(true).build());
+		
+		Conversation conversation = listResponse.getChannels().stream()
+				  .filter(c -> c.getName().equals(channel))
+				  .findFirst().get();
+		
+		ChatPostMessageResponse postResponse =
+				  slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).text(message).build());
+		
+		
+		if(!postResponse.isOk())
+			throw new IOException("Failed to post message: " + postResponse.getError());
+		
+		String messageTs = postResponse.getMessage().getTs();
+		
+		return messageTs;
+	}
+
+	/**
+	 * Check if the channel exists using the conversations API
+	 * 
+	 * @param channel
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean channelExists(String channel) throws Exception 
+	{
+		return getChannelNamesViaConversations(false).contains(channel);
 	}
 
 }

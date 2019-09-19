@@ -42,15 +42,16 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 
 		SlackBotApi api = new SlackBotApi(localSettings.getOathToken());
 		
-		Optional<Channel> channel = api.findChannelWithName(localSettings.getChannel());
+//		Optional<Channel> channel = api.findChannelWithName(localSettings.getChannel());
 		
-		if(!channel.isPresent())
+		if(!api.channelExists(localSettings.getChannel()))
 		{
 			throw new Exception("Provided channel name of " + localSettings.getChannel() + " is not valid");
 		}
+//		
+//		api.postMessage(channel.get(), localSettings.getMessage());
 		
-		api.postMessage(channel.get(), localSettings.getMessage());
-		
+		api.sendMessageToChannel(localSettings.getChannel(), localSettings.getMessage());
 		
 		BufferedDataTable[] out;
 		
