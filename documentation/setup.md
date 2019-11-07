@@ -2,7 +2,7 @@ This document is a work in progress and is based on the nightly/trunk version of
 
 # Creating a slack app
 
-Navigate to (https://api.slack.com/apps)[https://api.slack.com/apps] and log into your workspace. You will probably need to log in as a workspace administrator.
+Navigate to [https://api.slack.com/apps](https://api.slack.com/apps) and log into your workspace. You will probably need to log in as a workspace administrator.
 
 * Select Create New App
 ** Name the App e.g. KNIME
