@@ -14,6 +14,16 @@ Navigate to (https://api.slack.com/apps)[https://api.slack.com/apps] and log int
 ** Make a note of your OAuth Access Token and your Bot User OAuth Access Token
 ** Run "Reinstall App" from the Install App section
 
+## Configuring the permissions in your Slack workspace
+
+Different actions require different permissions to be assigned to the Slack App you configure for the KNIME nodes to interacting with your workspace through. 
+
+* Channel History: channel:history scope
+* Get Users: users:read scope
+* Channel Names: multiple scopes see https://api.slack.com/methods/conversations.list
+* Get Channels: multiple scopes see https://api.slack.com/methods/conversations.list
+* Message Slack channel: TODO
+* Message Slack channel (row based): TODO
 
 
 # Installing the KNIME nodes
@@ -26,13 +36,9 @@ The nodes can be found under the Other category. Install them as you would other
 
 Once installed open the KNIME Preferences, navigate to Slack Preferences Page and enter your OAuth Access Token. For information on the OAuth Access token and configuration of permissions see the next section.
 
-# Configuring the permissions in your Slack workspace
+# Using the nodes
 
-Different actions require different permissions to be assigned to the Slack App you configure for the KNIME nodes to interacting with your workspace through. 
+When switching from version 1 of the nodes to version 2 you will likely need to replace your OAuth Bot Token with the OAuth token. 
 
-* Channel History: channel:history scope
-* Get Users: users:read scope
-* Channel Names: multiple scopes see https://api.slack.com/methods/conversations.list
-* Get Channels: multiple scopes see https://api.slack.com/methods/conversations.list
-* Message Slack channel: TODO
-* Message Slack channel (row based): TODO
+Currently it doesn't look like a bot user can post to a private channel, you will need to post ass the App via the OAuth token not as the bot via the bot OAuth token
+
