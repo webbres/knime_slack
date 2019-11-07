@@ -5,11 +5,11 @@ This document is a work in progress and is based on the nightly/trunk version of
 Navigate to [https://api.slack.com/apps](https://api.slack.com/apps) and log into your workspace. You will probably need to log in as a workspace administrator.
 
 * Select Create New App
-** Name the App e.g. KNIME
-** Select the workspace the App should belong to
+  ** Name the App e.g. KNIME
+  ** Select the workspace the App should belong to
 * Select the Permissions tab under 'Add features and functionality'
-** Under Scopes select Add an OAuth Scope
-*** JSlack suggests Select all permission scopes except for identity.* however you probably only need: bot, channels:history, groups:history, channels:read, groups:read, users:read, users:read:email, chat:write:bot, im:write
+  ** Under Scopes select Add an OAuth Scope
+    *** JSlack suggests Select all permission scopes except for identity.* however you probably only need: bot, channels:history, groups:history, channels:read, groups:read, users:read, users:read:email, chat:write:bot, im:write
 * Navigate to Install App
 ** Make a note of your OAuth Access Token and your Bot User OAuth Access Token
 ** Run "Reinstall App" from the Install App section
