@@ -14,3 +14,11 @@ Once installed open the KNIME Preferences, navigate to Slack Preferences Page an
 
 # Configuring the permissions in your Slack workspace
 
+Different actions require different permissions to be assigned to the Slack App you configure for the KNIME nodes to interacting with your workspace through. 
+
+* Channel History: * channel:history scope
+* Get Users: * users:read scope
+* Channel Names: * multiple scopes see https://api.slack.com/methods/conversations.list
+* Get Channels: * multiple scopes see https://api.slack.com/methods/conversations.list
+* Message Slack channel: * TODO
+* Message Slack channel (row based): * TODO
