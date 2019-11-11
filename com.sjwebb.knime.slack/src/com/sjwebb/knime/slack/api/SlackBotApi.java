@@ -50,7 +50,7 @@ public class SlackBotApi {
 	 */
 	public String checkAuth() throws Exception
 	{
-		AuthTestResponse response = slack.methods().authTest(req -> req.token(token).build());
+		AuthTestResponse response = slack.methods().authTest(req -> req.token(token));
 		
 		if(response.isOk() != true)
 		{
@@ -123,7 +123,7 @@ public class SlackBotApi {
 		types.add(ConversationType.PUBLIC_CHANNEL);
 		
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(!keepArchives).build());
+				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(!keepArchives));
 		
 		if(!listResponse.isOk())
 		{
@@ -145,7 +145,7 @@ public class SlackBotApi {
 			types.add(ConversationType.PRIVATE_CHANNEL);
 		
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(!keepArchives).build());
+				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(!keepArchives));
 		
 		if(!listResponse.isOk())
 		{
@@ -291,8 +291,7 @@ public class SlackBotApi {
 		ChannelsHistoryResponse history = slack.methods().channelsHistory(req -> req
                 .token(token)
                 .channel(channel.getId())
-                .count(limit)
-                .build());
+                .count(limit));
 		
 		if(!history.isOk())
 		{
@@ -309,14 +308,14 @@ public class SlackBotApi {
 		types.add(ConversationType.PUBLIC_CHANNEL);
 		
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(true).build());
+				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(true));
 		
 		Conversation conversation = listResponse.getChannels().stream()
 				  .filter(c -> c.getName().equals(channel))
 				  .findFirst().get();
 		
 		ChatPostMessageResponse postResponse =
-				  slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).text(message).build());
+				  slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).text(message));
 		
 		
 		if(!postResponse.isOk())
