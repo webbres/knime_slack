@@ -27,14 +27,16 @@ import com.sjwebb.knime.slack.util.SlackOathTokenSettings;
  *
  * @author Samuel Webb
  */
-public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSettings> {
+public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSettings> 
+{
 	
 	private static final int NUM_OUT_CELLS = 8;
     
     /**
      * Constructor for the node model.
      */
-    protected GetUsersNodeModel() {
+    protected GetUsersNodeModel() 
+    {
         super(0, 1);
     }
 
@@ -43,10 +45,12 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
      */
     @Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-            final ExecutionContext exec) throws Exception {
+            final ExecutionContext exec) throws Exception 
+    {
 
 		SlackBotApi api;
-		try {
+		try 
+		{
 			api = SlackBotApiFactory.createFromSettings(localSettings);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -55,10 +59,11 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
 		}
 		
 		List<User> users;
-		try {
+		try 
+		{
 			users = api.getUsers();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) 
+		{
 			e.printStackTrace();
 			throw e;
 		}
@@ -68,7 +73,8 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
         return new BufferedDataTable[]{table};
     }
 
-    private BufferedDataTable createOutputTable(ExecutionContext exec, List<User> users) {
+    private BufferedDataTable createOutputTable(ExecutionContext exec, List<User> users) 
+    {
     	
 		BufferedDataContainer container = exec.createDataContainer(createOutputSpec());
 		
@@ -94,7 +100,8 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
 		return container.getTable();
 	}
 
-	private DataTableSpec createOutputSpec() {
+	private DataTableSpec createOutputSpec() 
+	{
 
 		DataTableSpecCreator creator = new DataTableSpecCreator();
 		
@@ -114,7 +121,8 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
      * {@inheritDoc}
      */
     @Override
-    protected void reset() {
+    protected void reset() 
+    {
         // TODO: generated method stub
     }
 
@@ -123,8 +131,8 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
      */
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
-            throws InvalidSettingsException {
-
+            throws InvalidSettingsException 
+    {
         return new DataTableSpec[]{createOutputSpec()};
     }
 
