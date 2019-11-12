@@ -2,6 +2,8 @@ package com.sjwebb.knime.slack.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import com.github.seratch.jslack.api.methods.response.channels.ChannelsListRespo
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.methods.response.conversations.ConversationsListResponse;
+import com.github.seratch.jslack.api.methods.response.conversations.ConversationsOpenResponse;
 import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Attachment;
@@ -336,6 +339,34 @@ public class SlackBotApi {
 	public boolean channelExists(String channel) throws Exception 
 	{
 		return getChannelNamesViaConversations(false).contains(channel);
+	}	
+	
+	
+	/**
+	 * Send a direct message to a user
+	 * @param user
+	 * @param message
+	 * @return
+	 * @throws IOException
+	 * @throws SlackApiException
+	 */
+	public ChatPostMessageResponse directMessage(String user, String message) throws IOException, SlackApiException
+	{
+//		List<ConversationType> types = new ArrayList<ConversationType>();
+//		types.add(ConversationType.IM);
+		
+		ConversationsOpenResponse response = slack.methods().conversationsOpen(req -> req.token(token).users(Arrays.asList(user)));
+		
+		if(!response.isOk())
+			throw new IOException("Failed to post message: " + response.getError());
+		
+		
+		ChatPostMessageResponse postResponse =
+				  slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).text(message));
+			
+		if(!postResponse.isOk())
+			throw new IOException("Failed to post message: " + postResponse.getError());
+				
+		return postResponse;
 	}
-
 }

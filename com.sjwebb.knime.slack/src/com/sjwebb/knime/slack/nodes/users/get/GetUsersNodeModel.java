@@ -30,7 +30,7 @@ import com.sjwebb.knime.slack.util.SlackOathTokenSettings;
 public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSettings> 
 {
 	
-	private static final int NUM_OUT_CELLS = 8;
+	private static final int NUM_OUT_CELLS = 13;
     
     /**
      * Constructor for the node model.
@@ -82,6 +82,7 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
 		{
 			DataCell[] cells = new DataCell[NUM_OUT_CELLS];
 			
+			
 			cells[0] = user.getId() != null ? StringCellFactory.create(user.getId()) : new MissingCell("No value available");
 			cells[1] = user.getName() != null ? StringCellFactory.create(user.getName()) : new MissingCell("No value available");
 			cells[2] = user.getColor() != null ? StringCellFactory.create(user.getColor()) : new MissingCell("No value available");
@@ -90,6 +91,12 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
 			cells[5] = user.getProfile().getRealName() != null ? StringCellFactory.create(user.getProfile().getRealName()) : new MissingCell("No value available");		
 			cells[6] = user.getProfile().getPhone() != null ? StringCellFactory.create(user.getProfile().getPhone()) : new MissingCell("No value available");		
 			cells[7] = user.getProfile().getSkype() != null ? StringCellFactory.create(user.getProfile().getSkype()) : new MissingCell("No value available");		
+			cells[8] = user.getPresence() != null ? StringCellFactory.create(user.getPresence()) : new MissingCell("No value available");	
+			cells[9] = user.getProfile().getDisplayName() != null ? StringCellFactory.create(user.getProfile().getDisplayName()) : new MissingCell("No value available");
+			cells[10] = user.getProfile().getDisplayNameNormalized() != null ? StringCellFactory.create(user.getProfile().getDisplayNameNormalized()) : new MissingCell("No value available");	
+			cells[11] = user.getProfile().getStatusText() != null ? StringCellFactory.create(user.getProfile().getStatusText()) : new MissingCell("No value available");
+			cells[12] = user.getProfile().getImageOriginal() != null ? StringCellFactory.create(user.getProfile().getImageOriginal()) : new MissingCell("No value available");
+			
 			
 			
 			container.addRowToTable(new DefaultRow(new RowKey("Row" + container.size()), cells));
@@ -113,6 +120,11 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
 		creator.addColumns(new DataColumnSpecCreator("Real name", StringCellFactory.TYPE).createSpec());
 		creator.addColumns(new DataColumnSpecCreator("Phone", StringCellFactory.TYPE).createSpec());
 		creator.addColumns(new DataColumnSpecCreator("Skype", StringCellFactory.TYPE).createSpec());
+		creator.addColumns(new DataColumnSpecCreator("Presence", StringCellFactory.TYPE).createSpec());
+		creator.addColumns(new DataColumnSpecCreator("Display name", StringCellFactory.TYPE).createSpec());
+		creator.addColumns(new DataColumnSpecCreator("Display name normalised", StringCellFactory.TYPE).createSpec());
+		creator.addColumns(new DataColumnSpecCreator("Status text", StringCellFactory.TYPE).createSpec());
+		creator.addColumns(new DataColumnSpecCreator("Image", StringCellFactory.TYPE).createSpec());
 		
 		return creator.createSpec();
 	}
