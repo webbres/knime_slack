@@ -2,7 +2,7 @@
 <feature
       id="com.sjwebb.knime.slack.feature"
       label="Slack integration"
-      version="2.0.0.qualifier"
+      version="2.0.1.qualifier"
       provider-name="Samuel Webb">
 
    <description url="https://github.com/webbres/knime_slack/">

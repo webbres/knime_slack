@@ -13,6 +13,7 @@ import org.knime.core.node.port.PortTypeRegistry;
 
 import com.github.seratch.jslack.api.model.Channel;
 import com.sjwebb.knime.slack.api.SlackBotApi;
+import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 
 /**
@@ -46,7 +47,7 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 		
 		if(!api.channelExists(localSettings.getChannel()))
 		{
-			throw new Exception("Provided channel name of " + localSettings.getChannel() + " is not valid");
+			throw new KnimeSlackException("Provided channel name of " + localSettings.getChannel() + " is not valid");
 		}
 //		
 //		api.postMessage(channel.get(), localSettings.getMessage());
