@@ -61,7 +61,7 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 		
 		try 
 		{
-			messages = api.getChannelMessages(channel.get(), 10);
+			messages = api.getChannelMessages(channel.get(), Integer.MAX_VALUE);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
