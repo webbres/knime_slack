@@ -33,6 +33,7 @@ import com.github.seratch.jslack.api.model.ConversationType;
 import com.github.seratch.jslack.api.model.Message;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.shortcut.Shortcut;
+import com.sjwebb.knime.slack.exception.KnimeSlackException;
 
 public class SlackBotApi {
 
@@ -87,7 +88,7 @@ public class SlackBotApi {
 	 * @throws IOException
 	 * @throws SlackApiException
 	 */
-	public List<Channel> getChannelList() throws IOException, SlackApiException {
+	public List<Channel> getChannelList() throws IOException, KnimeSlackException, SlackApiException {
 		return getChannelList(false);
 	}
 
@@ -96,25 +97,25 @@ public class SlackBotApi {
 	 * 
 	 * @param keepArchived should archived channels be kept
 	 * @return
-	 * @throws IOException
-	 * @throws SlackApiException
+	 * @throws SlackApiException 
+	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	public List<Channel> getChannelList(boolean keepArchived) throws IOException, SlackApiException {
+	public List<Channel> getChannelList(boolean keepArchived) throws KnimeSlackException, IOException, SlackApiException {
 		
 		ChannelsListResponse channelsResponse = slack.methods()
 				.channelsList(ChannelsListRequest.builder().excludeArchived(!keepArchived).token(token).build());
 
-
+		
+		if(channelsResponse.isOk() != true)
+		{
+			throw new KnimeSlackException(channelsResponse.getError() + " needs: " + channelsResponse.getNeeded());
+		}
+		
+		
 		List<Channel> channels = channelsResponse.getChannels();
 		
-//		if(keepArchived)
-//		{
-//			channels = channelsResponse.getChannels();
-//		} else
-//		{
-//			channels = channelsResponse.getChannels().stream().filter(v -> !v.isArchived()).collect(Collectors.toList());
-//		}
-
+		
 		return channels;
 	}
 	
@@ -208,7 +209,7 @@ public class SlackBotApi {
 	 * @throws SlackApiException
 	 * @deprecated - this is old API and should be replaced with the conversations API
 	 */
-	public Optional<Channel> findChannelWithName(String name) throws IOException, SlackApiException
+	public Optional<Channel> findChannelWithName(String name) throws IOException, KnimeSlackException, SlackApiException
 	{
 		List<Channel> channels = getChannelList();
 		
