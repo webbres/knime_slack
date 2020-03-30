@@ -1,8 +1,5 @@
 package com.sjwebb.knime.slack.nodes.messages.send.row;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
@@ -12,15 +9,11 @@ import org.knime.core.data.MissingCell;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.append.AppendedColumnRow;
 import org.knime.core.data.def.StringCell.StringCellFactory;
-import org.knime.core.data.json.JSONCellFactory;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 
-import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
-import com.github.seratch.jslack.api.model.Channel;
-import com.google.gson.GsonBuilder;
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 import com.sjwebb.knime.slack.util.SlackBotApiFactory;
@@ -46,32 +39,44 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 		int messageIndex = in.getSpec().findColumnIndex(localSettings.getMessageColumnName());
 
 		BufferedDataContainer container = exec.createDataContainer(createOutputSpec(in.getSpec()));
+		
+		SlackBotApi api;
 
-		for (DataRow row : in) {
+		try 
+		{
+			api = SlackBotApiFactory.createFromSettings(localSettings);
+		} catch (Exception e) 
+		{
+			e.printStackTrace();
+			throw new Exception("Could not establish SlackBotApi", e);
+		}
 
-			SlackBotApi api;
-
-			try {
-				api = SlackBotApiFactory.createFromSettings(localSettings);
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new Exception("Could not establish SlackBotApi", e);
-			}
-
+		for (DataRow row : in) 
+		{
 			DataCell channelCell = row.getCell(channelIndex);
 			DataCell messageCell = row.getCell(messageIndex);
 
-			if (channelCell.isMissing() || messageCell.isMissing()) {
+			if (channelCell.isMissing() || messageCell.isMissing()) 
+			{
 				addErrorRow(container, row, "Channel or message cell is missing");
-			} else {
+			} else 
+			{
 				String channel = ((StringValue) channelCell).getStringValue();
 				String message = ((StringValue) messageCell).getStringValue();
 
-				Optional<Channel> resolvedChannel = api.findChannelWithName(channel);
 
-				if (resolvedChannel.isPresent()) {
-					ChatPostMessageResponse response = api.postMessage(resolvedChannel.get(), message);
-					addRow(container, row, response);
+				if (api.channelExists(channel)) 
+				{
+					try 
+					{
+						String timestamp = api.sendMessageToChannel(channel, message);
+						addRow(container, row, timestamp);
+					} catch (Exception e) 
+					{
+						e.printStackTrace();
+						addErrorRow(container, row, e.getMessage());
+					}
+
 				} else {
 					addErrorRow(container, row, "Channel does not exist");
 				}
@@ -84,19 +89,17 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 		return new BufferedDataTable[] { container.getTable() };
 	}
 
-	private void addRow(BufferedDataContainer container, DataRow row, ChatPostMessageResponse response) {
-
-		GsonBuilder builder = new GsonBuilder();
-		String out = builder.create().toJson(response);
+	private void addRow(BufferedDataContainer container, DataRow row, String timestamp) {
 
 		DataCell outCell;
-		try {
-			outCell = JSONCellFactory.create(out, false);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		try 
+		{
+			outCell = StringCellFactory.create(timestamp);
+		} catch (Exception e) 
+		{
 			e.printStackTrace();
 			getLogger().error(e);
-			outCell = new MissingCell("Failed to generated JSON value: " + e.getMessage());
+			outCell = new MissingCell("Failed to generated cell: " + e.getMessage());
 		}
 
 		DataRow outRow = new AppendedColumnRow(row, outCell);
@@ -123,7 +126,7 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 		DataTableSpecCreator creator = new DataTableSpecCreator(inSpec);
 
 		creator.addColumns(
-				new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(inSpec, "Response"), JSONCellFactory.TYPE)
+				new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(inSpec, "timestamp"), StringCellFactory.TYPE)
 						.createSpec());
 
 		return creator.createSpec();

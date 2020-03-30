@@ -1,6 +1,4 @@
-package com.sjwebb.knime.slack.nodes.messages.send;
-
-import java.util.Optional;
+package com.sjwebb.knime.slack.nodes.user.messages.send;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
@@ -11,25 +9,24 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 
-import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.sjwebb.knime.slack.api.SlackBotApi;
-import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 
 /**
- * This is the model implementation of SendMessage. Send a slack message to a
- * designated channel
+ * This is the model implementation of MessageSlackUser.
+ * Send a direct message to a KNIME user
  *
- * @author Samuel Webb
+ * @author Sam Webb
  */
-public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessageSettings> {
+public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSlackUserSettings> {
 
 
 	
 	/**
 	 * Constructor for the node model.
 	 */
-	protected SendMessageNodeModel() {		
+	protected MessageSlackUserNodeModel() {		
 		super(new PortType[] {PortTypeRegistry.getInstance().getPortType(BufferedDataTable.class, true)}, 
 				new PortType[] {PortTypeRegistry.getInstance().getPortType(BufferedDataTable.class, false)});
 	}
@@ -42,17 +39,29 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 			throws Exception {
 
 		SlackBotApi api = new SlackBotApi(localSettings.getOathToken());
-		
-//		Optional<Channel> channel = api.findChannelWithName(localSettings.getChannel());
-		
-		if(!api.channelExists(localSettings.getChannel()))
+
+		ChatPostMessageResponse response = null;
+		try
 		{
-			throw new KnimeSlackException("Provided channel name of " + localSettings.getChannel() + " is not valid");
+			response = api.directMessage(localSettings.getUser(), localSettings.getMessage());
+			
+			if(!response.isOk())
+			{
+				getLogger().error(response.getError() + " - " + response.getMessage());
+				
+				
+				setWarningMessage(response.getError() + " - " + response.getMessage());
+				
+				throw new Exception(response.getError() + " - " + response.getMessage());
+			}
+		} catch (Exception e)
+		{			
+			getLogger().error(e);
+			
+			if(localSettings.isFailOnError())
+				throw e;
 		}
-//		
-//		api.postMessage(channel.get(), localSettings.getMessage());
-		
-		api.sendMessageToChannel(localSettings.getChannel(), localSettings.getMessage());
+
 		
 		BufferedDataTable[] out;
 		
@@ -77,8 +86,8 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 		return container.getTable();
 	}
 
-	private DataTableSpec getEmptySpec() {
-		
+	private DataTableSpec getEmptySpec() 
+	{
 		DataTableSpecCreator creator = new DataTableSpecCreator();
 		return creator.createSpec();
 	}
@@ -87,7 +96,8 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void reset() {
+	protected void reset() 
+	{
 		// TODO: generated method stub
 	}
 

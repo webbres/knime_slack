@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./slack.png" type="Source" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Get Users</name>
+    
+    <shortDescription>
+        Get the users from a Sack workspace
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>        
+        		Get the users from the connected Slack workspace.
+        		
+        <p>
+        	<b>The KNIME app in the slack workspace will require the users:read scope for this node to execute.</b>
+        </p>
+		</intro>
+		
+		<option name="Bot OAuth token">The OAuth token for the bot to use. Initially populated based on the preferences</option>
+
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Slack Users">The identified Slack Users</outPort>
+    </ports>    
+</knimeNode>

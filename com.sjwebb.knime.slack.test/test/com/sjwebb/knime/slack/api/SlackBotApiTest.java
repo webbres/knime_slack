@@ -16,10 +16,10 @@ import org.junit.Test;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
-import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
 import com.github.seratch.jslack.api.model.Attachment;
 import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Field;
+import com.github.seratch.jslack.api.model.Message;
 import com.github.seratch.jslack.api.model.User;
 
 public class SlackBotApiTest {
@@ -170,7 +170,7 @@ public class SlackBotApiTest {
 		List<User> response = null;
 		try {			
 			
-			response = api.getUsersListResponse();
+			response = api.getUsers();
 			
 			assertEquals("wrong number of users", 5, response.size());
 			
@@ -178,6 +178,27 @@ public class SlackBotApiTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	
+	@Test
+	public void testChannelHistory()
+	{
+		
+		String name = "random";
+		
+		try {
+			Optional<Channel> channel = api.findChannelWithName(name);
+			List<Message> messages = api.getChannelMessages(channel.get(), 10);
+			
+			assertEquals("incorrect message count", 10, messages.size());
+					
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+	
 	}
 
 

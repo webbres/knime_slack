@@ -2,13 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Slack Integration - Node extension for KNIME Workbench
 Bundle-SymbolicName: com.sjwebb.knime.slack;singleton:=true
-Bundle-Version: 1.0.1.qualifier
+Bundle-Version: 2.1.1.qualifier
 Bundle-ClassPath: .,
  libs/javax.websocket-api-1.1.jar,
- libs/jslack-1.0.20.jar,
  libs/okio-1.13.0.jar,
  libs/tyrus-standalone-client-1.13.jar,
- libs/okhttp-3.9.1.jar
+ libs/okhttp-3.9.1.jar,
+ libs/jslack-api-client-3.0.3.jar,
+ libs/jslack-api-model-3.0.3.jar,
+ libs/jslack-app-backend-3.0.3.jar
 Bundle-Activator: com.sjwebb.knime.slack.plugin.GetChannelsNodePlugin
 Bundle-Vendor: Samuel Webb
 Require-Bundle: org.eclipse.core.runtime,

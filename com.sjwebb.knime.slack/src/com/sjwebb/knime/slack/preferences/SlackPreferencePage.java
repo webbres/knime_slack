@@ -9,7 +9,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 public class SlackPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public static final String OATH_TOKEN = "Oath Token";
+	public static final String OAUTH_TOKEN = "OAuth Token";
 	
 	public SlackPreferencePage() {
 		super(GRID);
@@ -26,7 +26,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePage implements IW
 
 	@Override
 	protected void createFieldEditors() {
-		addField(new StringFieldEditor(OATH_TOKEN, "Bot User OAuth Access Token", getFieldEditorParent()));
+		addField(new StringFieldEditor(OAUTH_TOKEN, "OAuth Access Token", getFieldEditorParent()));
 
 	}
 

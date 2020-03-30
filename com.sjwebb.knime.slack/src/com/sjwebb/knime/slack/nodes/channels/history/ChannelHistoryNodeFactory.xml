@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./slack.png" type="Source" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Channel History</name>
+    
+    <shortDescription>
+        Get the channel history for the defined channel
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Gets the history of the specified channel.
+        
+        <p>
+        	<b>The KNIME app in the slack workspace will require the channel:history scope for this node to execute.</b>
+        </p>
+        </intro>
+        
+        
+        <option name="OAuth token">The OAth token of the bot to post as</option>
+        <option name="Channel">The channel to post to</option>
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Channel history">The channel history for the selected channel</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+</knimeNode>
