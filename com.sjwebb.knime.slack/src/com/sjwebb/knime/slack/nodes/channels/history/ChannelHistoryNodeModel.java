@@ -34,9 +34,9 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 	/**
 	 * Constructor for the node model.
 	 */
-	protected ChannelHistoryNodeModel() {
+	protected ChannelHistoryNodeModel() 
+	{
 
-		// TODO: Specify the amount of input and output ports needed.
 		super(0, 1);
 	}
 
