@@ -323,7 +323,15 @@ public class SlackBotApi {
 		
 		
 		if(!postResponse.isOk())
-			throw new IOException("Failed to post message: " + postResponse.getError());
+		{
+			if(postResponse.getError().equals("missing_scope")) {
+				throw new IOException("Failed to post message: " + postResponse.getError() + " " + postResponse.getNeeded());
+			} else {
+				throw new IOException("Failed to post message: " + postResponse.getError());
+			}
+
+		}
+			
 		
 		String messageTs = postResponse.getMessage().getTs();
 		
