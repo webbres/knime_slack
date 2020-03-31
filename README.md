@@ -18,6 +18,18 @@ in the KNIME preferences. See instructions from the [jslack library](https://git
 
 Each node can override the preference with a new Bot token either allowing multiple bots in one Slack workspace or access to bots in different Slack workspaces.
 
+On the 31/03/2020 the following works for setting up a knime-bot:
+
+1. Navigate to [https://api.slack.com/apps](https://api.slack.com/apps)
+2. Select Create New App and fill in the modal dialog with the App Name and Workspace
+3. Select OAuth and Permissions
+4. Under Scopes > Bot Token scopes add: channels:history, channels:read, chat:write, chat:write.public, groups:read, im:read, mpim:read, users:read
+5. Select Install App / Reinstall apps
+
+Use the Bot User OAuth Access Token in the KNIME nodes. 
+
+Fewer scopes may be possible if you need less functionality.
+
 ## Preferences
 
 The value specified in the KNIME / Slack preferences page will be used to auto populate the OAth token setting in each node.
