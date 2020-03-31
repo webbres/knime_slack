@@ -14,6 +14,7 @@ import com.github.seratch.jslack.api.methods.request.channels.ChannelsCreateRequ
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatDeleteRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
+import com.github.seratch.jslack.api.methods.request.conversations.ConversationsHistoryRequest;
 import com.github.seratch.jslack.api.methods.request.im.ImOpenRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.auth.AuthTestResponse;
@@ -22,6 +23,7 @@ import com.github.seratch.jslack.api.methods.response.channels.ChannelsHistoryRe
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
+import com.github.seratch.jslack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.github.seratch.jslack.api.methods.response.conversations.ConversationsListResponse;
 import com.github.seratch.jslack.api.methods.response.conversations.ConversationsOpenResponse;
 import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
@@ -147,7 +149,7 @@ public class SlackBotApi
 		
 		if(!listResponse.isOk())
 		{
-			throw new Exception("API call failed: " + listResponse.getError());
+			throw new Exception("API call failed: " + listResponse.getError() + (listResponse.getNeeded() != null ? " scope needed: " + listResponse.getNeeded() : ""));
 		}
 		
 		List<Conversation> conversations = listResponse.getChannels();
@@ -252,7 +254,59 @@ public class SlackBotApi
 		return history.getMessages();
 	}
 	
+	/**
+	 * 
+	 * @param channel
+	 * @return
+	 * @throws KnimeSlackException
+	 * @throws Exception
+	 */
+	public ConversationsHistoryResponse getChannelHistory(String channel) throws KnimeSlackException, Exception
+	{
+		if(!channelExists(channel))
+		{
+			throw new KnimeSlackException("Channel " + channel + " was not found");
+		}
+		
+		String channeId = getIdFromChannelName(channel);
+		
+		ConversationsHistoryResponse historyResponse = slack.methods().conversationsHistory(req -> req.token(token).channel(channeId));
+		
+		return historyResponse;
+	}
 	
+	/**
+	 * Get the ID of the channel with the given name. The ID is needed instead of the name for further API calls
+	 * @param channel
+	 * @return
+	 * @throws Exception
+	 */
+	private String getIdFromChannelName(String channel) throws Exception 
+	{
+		List<ConversationType> types = new ArrayList<ConversationType>();
+		types.add(ConversationType.PRIVATE_CHANNEL);
+		types.add(ConversationType.PUBLIC_CHANNEL);
+		
+		ConversationsListResponse listResponse = 
+				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(1000).excludeArchived(false));
+		
+		if(!listResponse.isOk())
+		{
+			throw new Exception("API call failed: " + listResponse.getError() + (listResponse.getNeeded() != null ? " scope needed: " + listResponse.getNeeded() : ""));
+		}
+		
+		List<Conversation> conversations = listResponse.getChannels();
+		
+		Optional<Conversation> slackChannel =  conversations.stream().filter(c -> c.getName().equals(channel)).findFirst();
+		
+		if(!slackChannel.isPresent())
+		{
+			throw new KnimeSlackException("Channel ID could not be found for channel " + channel);
+		}
+		
+		return slackChannel.get().getId();
+	}
+
 	/**
 	 * Send a message to the named channel returning the timestamp of the message
 	 * 
