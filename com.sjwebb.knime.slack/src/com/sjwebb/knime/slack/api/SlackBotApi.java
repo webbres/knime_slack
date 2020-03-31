@@ -149,7 +149,7 @@ public class SlackBotApi {
 			types.add(ConversationType.PRIVATE_CHANNEL);
 		
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(!keepArchives));
+				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(1000).excludeArchived(!keepArchives));
 		
 		if(!listResponse.isOk())
 		{
