@@ -3,11 +3,11 @@
     <name>Channel History</name>
     
     <shortDescription>
-        Get the channel history for the defined channel
+        Get the channel history for the defined channel (version )
     </shortDescription>
     
     <fullDescription>
-        <intro>Gets the history of the specified channel.
+        <intro>Gets the history of the specified channel (version 2).
         
         <p>
         	<b>This node requires a user OAuth token. For more details see <a href="https://api.slack.com/methods/conversations.history">https://api.slack.com/methods/conversations.history</a> </b>
