@@ -47,12 +47,14 @@ public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSla
 			
 			if(!response.isOk())
 			{
-				getLogger().error(response.getError() + " - " + response.getMessage());
+				String error = response.getError() + " - " + response.getMessage() + (response.getNeeded() != null ? " needed: " + response.getNeeded() : "");
+				
+				getLogger().error(error);
 				
 				
 				setWarningMessage(response.getError() + " - " + response.getMessage());
 				
-				throw new Exception(response.getError() + " - " + response.getMessage());
+				throw new Exception(error);
 			}
 		} catch (Exception e)
 		{			

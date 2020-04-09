@@ -381,16 +381,21 @@ public class SlackBotApi
 		
 		ConversationsOpenResponse response = slack.methods().conversationsOpen(req -> req.token(token).users(Arrays.asList(user)));
 		
-		if(!response.isOk())
-			throw new IOException("Failed to post message: " + response.getError());
+		if(!response.isOk()) {
+			String error = response.getError() + " - " + (response.getNeeded() != null ? " needed: " + response.getNeeded() : "");
+			throw new IOException("Failed to post message: " + error);
+		}
+			
 		
 		
 		ChatPostMessageResponse postResponse =
 				  slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).text(message));
 			
-		if(!postResponse.isOk())
-			throw new IOException("Failed to post message: " + postResponse.getError());
-				
+		if(!postResponse.isOk()) {
+			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");
+			throw new IOException("Failed to post message: " + error);
+		}
+			
 		return postResponse;
 	}
 }
