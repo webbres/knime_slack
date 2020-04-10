@@ -17,11 +17,12 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 
-import com.github.seratch.jslack.api.model.Channel;
-import com.github.seratch.jslack.api.model.Message;
 import com.sjwebb.knime.slack.api.SlackBotApi;
+import com.sjwebb.knime.slack.api.SlackBotLegacyApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 import com.sjwebb.knime.slack.util.SlackBotApiFactory;
+import com.slack.api.model.Channel;
+import com.slack.api.model.Message;
 
 /**
  * This is the model implementation of ChannelHistory. Get the channel history
@@ -47,7 +48,7 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
 			throws Exception {
 
-		SlackBotApi api = SlackBotApiFactory.createFromSettings(localSettings);
+		SlackBotLegacyApi api = SlackBotApiFactory.createLegacyFromSettings(localSettings);
 		
 		getLogger().debug(api.checkAuth());
 

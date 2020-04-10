@@ -5,6 +5,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
+import com.sjwebb.knime.slack.api.SlackBotLegacyApi;
 import com.sjwebb.knime.slack.preferences.SlackPreferencePage;
 
 public class SlackBotApiFactory {
@@ -21,6 +22,10 @@ public class SlackBotApiFactory {
 
 	public static SlackBotApi createFromSettings(SlackOathTokenSettings localSettings) {
 		return new SlackBotApi(localSettings.getOathToken());
+	}
+	
+	public static SlackBotLegacyApi createLegacyFromSettings(SlackOathTokenSettings localSettings) {
+		return new SlackBotLegacyApi(localSettings.getOathToken());
 	}
 	
 	public static String getDefaultOAuthToken()

@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="libs/jslack-api-client-3.0.3.jar" sourcepath="C:/Users/samwe/Downloads/jslack-api-client-3.0.3-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jslack-api-model-3.0.3.jar" sourcepath="C:/Users/samwe/Downloads/jslack-api-model-3.0.3-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jslack-app-backend-3.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/slack-api-client-1.0.5.jar" sourcepath="C:/Users/samwe/Downloads/slack-api-client-1.0.5-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/slack-api-model-1.0.5.jar" sourcepath="C:/Users/samwe/Downloads/slack-api-model-1.0.5-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/samwe/Downloads/slack-api-model-1.0.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="libs/slack-app-backend-1.0.5.jar" sourcepath="C:/Users/samwe/Downloads/slack-app-backend-1.0.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okhttp-3.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/javax.websocket-api-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okio-1.13.0.jar"/>

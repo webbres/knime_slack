@@ -3,39 +3,23 @@ package com.sjwebb.knime.slack.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import com.github.seratch.jslack.api.methods.request.channels.ChannelsCreateRequest;
-import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
-import com.github.seratch.jslack.api.methods.request.chat.ChatDeleteRequest;
-import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
-import com.github.seratch.jslack.api.methods.request.conversations.ConversationsHistoryRequest;
-import com.github.seratch.jslack.api.methods.request.im.ImOpenRequest;
-import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
-import com.github.seratch.jslack.api.methods.response.auth.AuthTestResponse;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsCreateResponse;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsHistoryResponse;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
-import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
-import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
-import com.github.seratch.jslack.api.methods.response.conversations.ConversationsHistoryResponse;
-import com.github.seratch.jslack.api.methods.response.conversations.ConversationsListResponse;
-import com.github.seratch.jslack.api.methods.response.conversations.ConversationsOpenResponse;
-import com.github.seratch.jslack.api.methods.response.im.ImOpenResponse;
-import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
-import com.github.seratch.jslack.api.model.Attachment;
-import com.github.seratch.jslack.api.model.Channel;
-import com.github.seratch.jslack.api.model.Conversation;
-import com.github.seratch.jslack.api.model.ConversationType;
-import com.github.seratch.jslack.api.model.Message;
-import com.github.seratch.jslack.api.model.User;
-import com.github.seratch.jslack.shortcut.Shortcut;
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
+import com.slack.api.Slack;
+import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.request.users.UsersListRequest;
+import com.slack.api.methods.response.auth.AuthTestResponse;
+import com.slack.api.methods.response.chat.ChatPostMessageResponse;
+import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
+import com.slack.api.methods.response.conversations.ConversationsListResponse;
+import com.slack.api.methods.response.conversations.ConversationsOpenResponse;
+import com.slack.api.methods.response.users.UsersListResponse;
+import com.slack.api.model.Conversation;
+import com.slack.api.model.ConversationType;
+import com.slack.api.model.User;
 
 /**
  * Slack API calls
@@ -73,61 +57,6 @@ public class SlackBotApi
 		return response.getUserId() + " : " + response.getUser();
 	}
 	
-	/**
-	 * Create a channel
-	 * 
-	 * @param channelName
-	 *            The name of the new channel
-	 * @return
-	 * @throws IOException
-	 * @throws SlackApiException
-	 */
-	public ChannelsCreateResponse createChanel(String channelName) throws IOException, SlackApiException {
-
-		ChannelsCreateRequest channelCreation = ChannelsCreateRequest.builder().token(token).name(channelName).build();
-		ChannelsCreateResponse response = slack.methods().channelsCreate(channelCreation);
-
-		return response;
-	}
-
-	/**
-	 * Get the list of non archived channels
-	 * 
-	 * @return
-	 * @throws IOException
-	 * @throws SlackApiException
-	 */
-	public List<Channel> getChannelList() throws IOException, KnimeSlackException, SlackApiException {
-		return getChannelList(false);
-	}
-
-	/**
-	 * Get the list of channels
-	 * 
-	 * @param keepArchived should archived channels be kept
-	 * @return
-	 * @throws SlackApiException 
-	 * @throws IOException 
-	 * @throws Exception 
-	 * @deprecated - this is the old API and should be replaced with the conversations API
-	 */
-	public List<Channel> getChannelList(boolean keepArchived) throws KnimeSlackException, IOException, SlackApiException {
-		
-		ChannelsListResponse channelsResponse = slack.methods()
-				.channelsList(ChannelsListRequest.builder().excludeArchived(!keepArchived).token(token).build());
-
-		
-		if(channelsResponse.isOk() != true)
-		{
-			throw new KnimeSlackException(channelsResponse.getError() + " needs: " + channelsResponse.getNeeded());
-		}
-		
-		
-		List<Channel> channels = channelsResponse.getChannels();
-		
-		
-		return channels;
-	}
 	
 	/**
 	 * Get the channel names (public and private) using the conversations API
@@ -189,28 +118,6 @@ public class SlackBotApi
 
 	
 	/**
-	 * Get the channel with the given name. 
-	 * 
-	 * @param name
-	 * @return
-	 * @throws IOException
-	 * @throws SlackApiException
-	 * @deprecated - this is old API and should be replaced with the conversations API
-	 */
-	public Optional<Channel> findChannelWithName(String name) throws IOException, KnimeSlackException, SlackApiException
-	{
-		List<Channel> channels = getChannelList();
-		
-		Optional<Channel> channel = channels.stream()
-		        .filter(c -> c.getName().equals(name)).findFirst();
-		
-		return channel;
-	}
-
-	
-
-	
-	/**
 	 * Get all of the users from the workspace
 	 * 
 	 * @return
@@ -230,29 +137,6 @@ public class SlackBotApi
 	}
 	
 	
-
-	/**
-	 * 
-	 * @param channel
-	 * @param limit
-	 * @return
-	 * @throws Exception
-	 * @deprecated this is the old API and should be replaced
-	 */
-	public List<Message> getChannelMessages(Channel channel, int limit) throws Exception
-	{
-		ChannelsHistoryResponse history = slack.methods().channelsHistory(req -> req
-                .token(token)
-                .channel(channel.getId())
-                .count(limit));
-		
-		if(!history.isOk())
-		{
-			throw new Exception(history.getError() + " - needed: " + history.getNeeded());
-		}
-		
-		return history.getMessages();
-	}
 	
 	/**
 	 * 
@@ -368,22 +252,24 @@ public class SlackBotApi
 	
 	/**
 	 * Send a direct message to a user
-	 * @param user
+	 * 
+	 * @param user - a comma seperated list of users. Can be user ids of display names.
 	 * @param message
 	 * @return
-	 * @throws IOException
-	 * @throws SlackApiException
+	 * @throws Exception 
 	 */
-	public ChatPostMessageResponse directMessage(String user, String message) throws IOException, SlackApiException
+	public ChatPostMessageResponse directMessage(String user, String message) throws Exception
 	{
-//		List<ConversationType> types = new ArrayList<ConversationType>();
-//		types.add(ConversationType.IM);
 		
-		ConversationsOpenResponse response = slack.methods().conversationsOpen(req -> req.token(token).users(Arrays.asList(user)));
+		String[] users = user.trim().replace(", ", ",").split(",");
+		
+		List<String> usersIds = replaceWithId(users);
+		
+		ConversationsOpenResponse response = slack.methods().conversationsOpen(req -> req.token(token).returnIm(true).users(usersIds));
 		
 		if(!response.isOk()) {
 			String error = response.getError() + " - " + (response.getNeeded() != null ? " needed: " + response.getNeeded() : "");
-			throw new IOException("Failed to post message: " + error);
+			throw new IOException("Failed to open conversation with user (" +  user + ")" + error);
 		}
 			
 		
@@ -393,9 +279,45 @@ public class SlackBotApi
 			
 		if(!postResponse.isOk()) {
 			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");
-			throw new IOException("Failed to post message: " + error);
+			throw new IOException("Failed to send message to user (" +  user + ")" + error);
 		}
 			
 		return postResponse;
 	}
+
+	private List<String> replaceWithId(String[] namedUsers) throws Exception 
+	{
+		List<User> users = getUsers();
+		
+		List<String> userIds = new ArrayList<String>();
+		
+		for(String user : namedUsers) {
+			if (user.startsWith("@")) 
+			{
+				List<String> ids = users.stream().filter(u -> u.getProfile().getDisplayName().equals(user.substring(1))).map(u -> u.getId()).collect(Collectors.toList());
+				
+				if(ids.size() > 1) {
+					throw new Exception("Multiple users with the display name " + user + " were found, please run again using the desired users ID instead of name");
+				}
+				
+				if(ids.size() == 0) {
+					throw new Exception("No user with the display name  " + user + " was found");
+				}
+				
+				userIds.addAll(ids);
+			}
+			else
+			{
+				userIds.add(user);
+			}
+		}
+		
+		return userIds;
+	}
+	
+	
+	
+	
+	
+
 }
