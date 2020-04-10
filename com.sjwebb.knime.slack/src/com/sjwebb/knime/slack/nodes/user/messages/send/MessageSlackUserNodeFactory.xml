@@ -15,13 +15,20 @@
 			Send the given message to the specified user on execution. No input table needs to be specified, if one is given it is passed through verbatim. 
 			
 			<p>
-				Unfortunately the display name in Slack is not unique. So the @{username} value you may use is not directly usable within this node as the 
-				username. Instead you must find the user's ID (e.g. looking it up int he Get Users node) and provide this.
+				Users should ideally be identified by their unique ID which looks something like 'U011N55HKCL', these IDs can be fetched with the Get Users node. 
+				It is however possible to provide the display name in the same way you would identify a user when messaging in the slack app, for example @Person for
+				the user with the display name of 'Person' - the @ must be included to indicate it's a display name and not an ID.  Display names <b>are not unique</b> 
+				and if multiple users with the same display name are found the node will fail.
+			</p>
+			
+			<p>
+				To message a group of users the channels:manage scope must be set. Multiple users should be specified as a comma separated list such as U011N55HKCL,U011XEN1RDW.
+				It is possible to mix and match display names and user IDs such as: @Person,U011XEN1RDW. White space will be automatically trimmed.
 			</p>
         </intro>
         
         <option name="Bot OAuth token">The OAth token of the bot to post as</option>
-        <option name="User ID">The user to post to. This value can be found in the ID column of the output table of the Get Users node.</option>
+        <option name="User ID(s)">The user to post to. To send to multiple users provide a comma seperated list of user IDs or display names. This value can be found in the ID column of the output table of the Get Users node.</option>
         <option name="Message">The message to post</option>
         <option name="Fail on error">Node will fail terminating workflow branch if checked. Uncheck to continue workflow if message can't be sent</option>
 

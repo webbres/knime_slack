@@ -8,9 +8,9 @@ Bundle-ClassPath: .,
  libs/okio-1.13.0.jar,
  libs/tyrus-standalone-client-1.13.jar,
  libs/okhttp-3.9.1.jar,
- libs/jslack-api-client-3.0.3.jar,
- libs/jslack-api-model-3.0.3.jar,
- libs/jslack-app-backend-3.0.3.jar
+ libs/slack-api-client-1.0.5.jar,
+ libs/slack-api-model-1.0.5.jar,
+ libs/slack-app-backend-1.0.5.jar
 Bundle-Activator: com.sjwebb.knime.slack.plugin.GetChannelsNodePlugin
 Bundle-Vendor: Samuel Webb
 Require-Bundle: org.eclipse.core.runtime,
