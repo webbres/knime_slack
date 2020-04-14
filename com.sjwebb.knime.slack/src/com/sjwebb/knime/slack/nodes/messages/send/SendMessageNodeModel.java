@@ -1,7 +1,5 @@
 package com.sjwebb.knime.slack.nodes.messages.send;
 
-import java.util.Optional;
-
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.node.BufferedDataContainer;
@@ -11,7 +9,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 
-import com.github.seratch.jslack.api.model.Channel;
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;

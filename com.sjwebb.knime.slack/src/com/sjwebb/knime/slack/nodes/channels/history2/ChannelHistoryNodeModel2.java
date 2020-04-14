@@ -1,7 +1,4 @@
-package com.sjwebb.knime.slack.nodes.channels.history;
-
-import java.util.List;
-import java.util.Optional;
+package com.sjwebb.knime.slack.nodes.channels.history2;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -18,10 +15,10 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
-import com.sjwebb.knime.slack.api.SlackBotLegacyApi;
+import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 import com.sjwebb.knime.slack.util.SlackBotApiFactory;
-import com.slack.api.model.Channel;
+import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.slack.api.model.Message;
 
 /**
@@ -30,12 +27,12 @@ import com.slack.api.model.Message;
  *
  * @author Samuel Webb
  */
-public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHistorySettings> {
+public class ChannelHistoryNodeModel2 extends LocalSettingsNodeModel<ChannelHistorySettings2> {
 
 	/**
 	 * Constructor for the node model.
 	 */
-	protected ChannelHistoryNodeModel() 
+	protected ChannelHistoryNodeModel2() 
 	{
 
 		super(0, 1);
@@ -48,36 +45,41 @@ public class ChannelHistoryNodeModel extends LocalSettingsNodeModel<ChannelHisto
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
 			throws Exception {
 
-		SlackBotLegacyApi api = SlackBotApiFactory.createLegacyFromSettings(localSettings);
+		SlackBotApi api = SlackBotApiFactory.createFromSettings(localSettings);
 		
 		getLogger().debug(api.checkAuth());
 
-		Optional<Channel> channel = api.findChannelWithName(localSettings.getChannelName());
+		
 
-		if (!channel.isPresent()) {
+		if (!api.channelExists(localSettings.getChannelName())) {
 			throw new Exception("Provided channel name of " + localSettings.getChannelName() + " is not valid");
 		}
 
-		List<Message> messages;
+		ConversationsHistoryResponse history;
 		
 		try 
 		{
-			messages = api.getChannelMessages(channel.get(), Integer.MAX_VALUE);
+			history = api.getChannelHistory(localSettings.getChannelName());
+			
+			if(!history.isOk()) {
+				throw new KnimeSlackException("Failed to fetch history. Error: " + history.getError() + (history.getNeeded() != null ? " scope needed: " + history.getNeeded(): ""));
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 
-		BufferedDataTable table = createOutputTable(exec, messages);
+		BufferedDataTable table = createOutputTable(exec, history);
 
 		return new BufferedDataTable[] { table };
 	}
 
-	private BufferedDataTable createOutputTable(ExecutionContext exec, List<Message> messages) {
+	private BufferedDataTable createOutputTable(ExecutionContext exec, ConversationsHistoryResponse history) {
 
-		BufferedDataContainer container = exec.createDataContainer(createOutputSpec());
-
-		for (Message msg : messages)
+		BufferedDataContainer container = exec.createDataContainer(createOutputSpec());		
+		
+		for (Message msg : history.getMessages())
 			container.addRowToTable(createRow(msg, container.size()));
 
 		container.close();

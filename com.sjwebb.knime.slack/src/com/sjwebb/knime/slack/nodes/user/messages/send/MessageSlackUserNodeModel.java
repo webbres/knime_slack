@@ -9,9 +9,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 
-import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
+import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
 /**
  * This is the model implementation of MessageSlackUser.
@@ -47,12 +47,14 @@ public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSla
 			
 			if(!response.isOk())
 			{
-				getLogger().error(response.getError() + " - " + response.getMessage());
+				String error = response.getError() + " - " + response.getMessage() + (response.getNeeded() != null ? " needed: " + response.getNeeded() : "");
+				
+				getLogger().error(error);
 				
 				
 				setWarningMessage(response.getError() + " - " + response.getMessage());
 				
-				throw new Exception(response.getError() + " - " + response.getMessage());
+				throw new Exception(error);
 			}
 		} catch (Exception e)
 		{			

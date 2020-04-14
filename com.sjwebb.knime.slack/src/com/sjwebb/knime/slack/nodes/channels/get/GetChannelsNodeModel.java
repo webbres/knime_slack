@@ -17,11 +17,12 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 
-import com.github.seratch.jslack.api.model.Conversation;
+
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 import com.sjwebb.knime.slack.util.SlackBotApiFactory;
 import com.sjwebb.knime.slack.util.SlackOathTokenSettings;
+import com.slack.api.model.Conversation;
 
 /**
  * This is the model implementation of GetChannels. Get the channels from the
