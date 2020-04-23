@@ -211,7 +211,7 @@ public class SlackBotApi
 		
 		// First find the conversation to get the ID
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).excludeArchived(true));
+				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(1000).excludeArchived(true));
 		
 		Conversation conversation = listResponse.getChannels().stream()
 				  .filter(c -> c.getName().equals(channel))
