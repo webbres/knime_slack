@@ -69,7 +69,7 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 				{
 					try 
 					{
-						String timestamp = api.sendMessageToChannel(channel, message);
+						String timestamp = api.sendMessageToChannel(channel, message, localSettings.getOptionalUsername());
 						addRow(container, row, timestamp);
 					} catch (Exception e) 
 					{
