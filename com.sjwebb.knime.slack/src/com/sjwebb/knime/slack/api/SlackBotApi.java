@@ -274,7 +274,7 @@ public class SlackBotApi
 	 * @return
 	 * @throws Exception 
 	 */
-	public ChatPostMessageResponse directMessage(String user, String message) throws Exception
+	public ChatPostMessageResponse directMessage(String user, String message, Optional<String> username) throws Exception
 	{
 		
 		String[] users = user.trim().replace(", ", ",").split(",");
@@ -290,8 +290,18 @@ public class SlackBotApi
 			
 		
 		
-		ChatPostMessageResponse postResponse =
-				  slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).text(message));
+//		ChatPostMessageResponse postResponse =
+//				  slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).text(message));
+		
+		ChatPostMessageResponse postResponse;
+		if(username.isPresent()) 
+		{
+			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).username(username.get()).text(message));
+		} else
+		{
+			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).text(message));
+			
+		}
 			
 		if(!postResponse.isOk()) {
 			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");

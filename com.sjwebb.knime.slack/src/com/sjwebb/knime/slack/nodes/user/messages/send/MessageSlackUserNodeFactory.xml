@@ -6,10 +6,6 @@
         Send a direct message to a KNIME user
     </shortDescription>
     
-    <shortDescription>
-        Send a slack message to a designated user.
-    </shortDescription>
-    
     <fullDescription>
         <intro>
 			Send the given message to the specified user on execution. No input table needs to be specified, if one is given it is passed through verbatim. 
@@ -25,6 +21,20 @@
 				To message a group of users the channels:manage scope must be set. Multiple users should be specified as a comma separated list such as U011N55HKCL,U011XEN1RDW.
 				It is possible to mix and match display names and user IDs such as: @Person,U011XEN1RDW. White space will be automatically trimmed.
 			</p>
+			
+			<p>
+	               	API call details: <a href="https://api.slack.com/methods/conversations.open">https://api.slack.com/methods/conversations.open</a> and <a href="https://api.slack.com/methods/chat.postMessage">https://api.slack.com/methods/chat.postMessage</a>
+	        </p>        
+	
+	       	
+	       	<p>
+	       		<b>Notes on username:</b>
+	       		By default the message will be sent and display with the apps name. If the chat:write:customize scope has been added then it is possible to 
+	       		set a username parameter. If changing the display name / username of the source of the message is desirable then check 'Set username' and 
+	       		provide the username to post the message as. The messages will however appear undo the app regardless of what username is set.
+	       	</p>
+        
+			
         </intro>
         
         <option name="Bot OAuth token">The OAth token of the bot to post as</option>
@@ -32,6 +42,8 @@
         <option name="Message">The message to post</option>
         <option name="Fail on error">Node will fail terminating workflow branch if checked. Uncheck to continue workflow if message can't be sent</option>
 
+        <option name="Set username">Whether to use the custom provided username instead of bot name.</option>
+        <option name="Username">A custom username to set, this will overide the default bot name. Ignored if Set username is not checked.</option>
 
     </fullDescription>
     

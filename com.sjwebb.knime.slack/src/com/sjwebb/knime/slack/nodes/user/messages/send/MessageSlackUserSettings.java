@@ -1,6 +1,12 @@
 package com.sjwebb.knime.slack.nodes.user.messages.send;
 
+import java.util.Optional;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.knime.core.node.defaultnodesettings.DialogComponent;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentMultiLineString;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
@@ -16,12 +22,33 @@ public class MessageSlackUserSettings extends NodeSettingCollection {
 	public static final String MESSAGE = "Message";
 	public static final String FAIL_ON_ERROR = "failOnError";
 	
+	public static final String USERNAME =  "Username";
+	public static final String SET_USERNAME = "Set-username";
+	
 	@Override
 	protected void addSettings() {
 		addSetting(OATH_TOKEN, new SettingsModelString(OATH_TOKEN, getPreferenceOAuthToken()));
 		addSetting(USER, new SettingsModelString(USER, ""));
 		addSetting(MESSAGE, new SettingsModelString(MESSAGE, "Hello from KNIME"));
 		addSetting(FAIL_ON_ERROR, new SettingsModelBoolean(FAIL_ON_ERROR, true));
+		
+		SettingsModelString username = new SettingsModelString(USERNAME, "KNIME Bot");
+		username.setEnabled(false);
+		
+		addSetting(USERNAME, username);
+
+		SettingsModelBoolean setUsername = new SettingsModelBoolean(SET_USERNAME, false);
+		addSetting(SET_USERNAME, setUsername);
+		
+		
+		setUsername.addChangeListener(new ChangeListener() 
+		{
+			@Override
+			public void stateChanged(ChangeEvent e) 
+			{
+				username.setEnabled(setUsername.getBooleanValue());
+			}
+		});
 	}
 
 	
@@ -70,4 +97,28 @@ public class MessageSlackUserSettings extends NodeSettingCollection {
 		return getBooleanComponent(FAIL_ON_ERROR, "Fail on error");
 	}
 	
+	public Optional<String> getOptionalUsername()
+	{
+		return isSetUsername() ? Optional.of(getUsername()) : Optional.empty();
+	}
+	
+	
+	public String getUsername() {
+		return getSetting(USERNAME, SettingsModelString.class).getStringValue();
+	}
+	
+	public boolean isSetUsername()
+	{
+		return getBooleanValue(SET_USERNAME);
+	}
+	
+	public DialogComponent getDialogComponentUsername()
+	{
+		return new DialogComponentString(getSetting(USERNAME, SettingsModelString.class), "Username");
+	}
+	
+	public DialogComponent getDialogComponentSetUsername()
+	{
+		return new DialogComponentBoolean(getSetting(SET_USERNAME, SettingsModelBoolean.class), "Set username");
+	}	
 }

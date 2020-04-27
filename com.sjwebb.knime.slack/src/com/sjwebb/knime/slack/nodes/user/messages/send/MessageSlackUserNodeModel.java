@@ -43,7 +43,7 @@ public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSla
 		ChatPostMessageResponse response = null;
 		try
 		{
-			response = api.directMessage(localSettings.getUser(), localSettings.getMessage());
+			response = api.directMessage(localSettings.getUser(), localSettings.getMessage(), localSettings.getOptionalUsername());
 			
 			if(!response.isOk())
 			{
