@@ -7,15 +7,15 @@
     </shortDescription>
     
     <fullDescription>
-        <intro>Gets the history of the specified channel (version 2).
+        <intro>Gets the history of the specified channel (version 2). A maximum of 1000 messages will be retrieved.
         
         <p>
-        	<b>This node requires a user OAuth token. For more details see <a href="https://api.slack.com/methods/conversations.history">https://api.slack.com/methods/conversations.history</a> </b>
+        	<b>This node requires a user OAuth token. 
+        	For more details see <a href="https://api.slack.com/methods/conversations.history">https://api.slack.com/methods/conversations.history</a> </b>
         </p>
         
         <p>
             The following scopes must be set: channels:history, channels:read and groups:history.
-        
         </p>
         
         </intro>

@@ -1,5 +1,7 @@
 package com.sjwebb.knime.slack.nodes.messages.send;
 
+import java.util.Optional;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.node.BufferedDataContainer;
@@ -49,7 +51,7 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 //		
 //		api.postMessage(channel.get(), localSettings.getMessage());
 		
-		api.sendMessageToChannel(localSettings.getChannel(), localSettings.getMessage());
+		api.sendMessageToChannel(localSettings.getChannel(), localSettings.getMessage(), localSettings.getOptionalUsername());
 		
 		BufferedDataTable[] out;
 		

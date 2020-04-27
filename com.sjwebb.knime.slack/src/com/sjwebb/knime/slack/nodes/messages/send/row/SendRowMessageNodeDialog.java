@@ -27,6 +27,11 @@ public class SendRowMessageNodeDialog extends DefaultNodeSettingsPane {
     	setHorizontalPlacement(true);
     	addDialogComponent(settings.getDialogComponentChannel());
     	addDialogComponent(settings.getDialogComponentMessage());
+    	
+    	createNewGroup("Username");
+    	setHorizontalPlacement(true);
+    	addDialogComponent(settings.getDialogComponentSetUsername());
+    	addDialogComponent(settings.getDialogComponentUsername());
 
     }
 }
