@@ -26,6 +26,11 @@ public class MessageSlackUserNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(settings.getDialogComponentUser());
     	addDialogComponent(settings.getDialogCompoinentMessage());
     	addDialogComponent(settings.getDialogComponentFailOnError());
+    
+    	createNewGroup("Username");
+    	setHorizontalPlacement(true);
+    	addDialogComponent(settings.getDialogComponentSetUsername());
+    	addDialogComponent(settings.getDialogComponentUsername());
     }
 }
 
