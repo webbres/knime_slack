@@ -15,16 +15,24 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
  */
 public class SendMessageNodeDialog extends DefaultNodeSettingsPane {
 
+	private SlackSendMessageSettings settings;
+	
     /**
      * New pane for configuring the SendMessage node.
      */
     protected SendMessageNodeDialog() {
-    	SlackSendMessageSettings settings = new SlackSendMessageSettings();
+    	settings = new SlackSendMessageSettings();
     	
     	addDialogComponent(settings.getDialogCompoinentOathToken());
     	addDialogComponent(settings.getDialogCompoinentChannel());
     	addDialogComponent(settings.getDialogCompoinentMessage());
     	
+    	createNewGroup("Username");
+    	setHorizontalPlacement(true);
+    	addDialogComponent(settings.getDialogComponentSetUsername());
+    	addDialogComponent(settings.getDialogComponentUsername());
+
     }
+    
 }
 

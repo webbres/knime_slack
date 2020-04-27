@@ -9,11 +9,26 @@
     <fullDescription>
         <intro>
 			Send the given message to the specified channel on execution. No input table needs to be specified, if one is given it is passed through verbatim. 
+        
+        <p>
+               	API call details: <a href="https://api.slack.com/methods/chat.postMessage">https://api.slack.com/methods/chat.postMessage</a>
+        </p>        
+
+       	
+       	<p>
+       		<b>Notes on username:</b>
+       		By default the message will be sent and display with the apps name. If the chat:write:customize scope has been added then it is possible to 
+       		set a username parameter. If changing the display name / username of the source of the message is desirable then check 'Set username' and 
+       		provide the username to post the message as.
+       	</p>
+        
         </intro>
         
         <option name="Bot OAuth token">The OAth token of the bot to post as</option>
         <option name="Channel">The channel to post to</option>
         <option name="Message">The message to post</option>
+        <option name="Set username">Whether to use the custom provided username instead of bot name.</option>
+        <option name="Username">A custom username to set, this will overide the default bot name. Ignored if Set username is not checked.</option>
 
 
     </fullDescription>

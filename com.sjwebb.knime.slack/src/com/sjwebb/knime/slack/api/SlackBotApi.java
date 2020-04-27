@@ -2,14 +2,12 @@ package com.sjwebb.knime.slack.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.Slack;
-import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.users.UsersListRequest;
 import com.slack.api.methods.response.auth.AuthTestResponse;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
@@ -34,6 +32,8 @@ public class SlackBotApi
 	private Slack slack;
 
 	private String token;
+	
+	private static final int DEFAULT_LIMIT = 1000;
 
 	public SlackBotApi(String token) {
 		this.slack = Slack.getInstance();
@@ -74,7 +74,7 @@ public class SlackBotApi
 		types.add(ConversationType.PUBLIC_CHANNEL);
 		
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(1000).excludeArchived(!keepArchives));
+				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(DEFAULT_LIMIT).excludeArchived(!keepArchives));
 		
 		if(!listResponse.isOk())
 		{
@@ -104,7 +104,7 @@ public class SlackBotApi
 			types.add(ConversationType.PRIVATE_CHANNEL);
 		
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(1000).excludeArchived(!keepArchives));
+				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(DEFAULT_LIMIT).excludeArchived(!keepArchives));
 		
 		if(!listResponse.isOk())
 		{
@@ -124,6 +124,9 @@ public class SlackBotApi
 	 * @throws Exception 
 	 */
 	public List<User> getUsers() throws Exception {
+		
+		// Limit: The maximum number of items to return. Default - 0 27/04/2020
+		// https://api.slack.com/methods/users.list
 		
 		UsersListResponse respone = slack.methods().usersList(UsersListRequest.builder().token(token).build());
 		
@@ -147,6 +150,10 @@ public class SlackBotApi
 	 */
 	public ConversationsHistoryResponse getChannelHistory(String channel) throws KnimeSlackException, Exception
 	{
+		// https://api.slack.com/methods/conversations.history
+		// Limit: The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the users list hasn't been reached
+		// 			default = 100
+		
 		if(!channelExists(channel))
 		{
 			throw new KnimeSlackException("Channel " + channel + " was not found");
@@ -154,7 +161,7 @@ public class SlackBotApi
 		
 		String channeId = getIdFromChannelName(channel);
 		
-		ConversationsHistoryResponse historyResponse = slack.methods().conversationsHistory(req -> req.token(token).channel(channeId));
+		ConversationsHistoryResponse historyResponse = slack.methods().conversationsHistory(req -> req.token(token).limit(DEFAULT_LIMIT).channel(channeId));
 		
 		return historyResponse;
 	}
@@ -194,13 +201,14 @@ public class SlackBotApi
 	/**
 	 * Send a message to the named channel returning the timestamp of the message
 	 * 
-	 * @param channel
-	 * @param message
+	 * @param channel	the channel to send the message to
+	 * @param message	the message to send
+	 * @param username - if provided sets the username to display the bot as
 	 * @return
 	 * @throws Exception 
 	 * @throws KnimeSlackException 
 	 */
-	public String sendMessageToChannel(String channel, String message) throws KnimeSlackException, Exception
+	public String sendMessageToChannel(String channel, String message, Optional<String> username) throws KnimeSlackException, Exception
 	{
 		List<ConversationType> types = new ArrayList<ConversationType>();
 		types.add(ConversationType.PRIVATE_CHANNEL);
@@ -211,15 +219,23 @@ public class SlackBotApi
 		
 		// First find the conversation to get the ID
 		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(1000).excludeArchived(true));
+				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(DEFAULT_LIMIT).excludeArchived(true));
 		
 		Conversation conversation = listResponse.getChannels().stream()
 				  .filter(c -> c.getName().equals(channel))
 				  .findFirst().get();
 		
-		ChatPostMessageResponse postResponse =
-				  slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).text(message));
+		ChatPostMessageResponse postResponse;
+		if(username.isPresent()) 
+		{
+			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).username(username.get()).text(message));
+		} else
+		{
+			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).text(message));
+			
+		}
 		
+
 		
 		if(!postResponse.isOk())
 		{
@@ -285,6 +301,12 @@ public class SlackBotApi
 		return postResponse;
 	}
 
+	/**
+	 * Return a new list of usernames having replace display names (@Name1, @Name2) with the unique slack username
+	 * @param namedUsers
+	 * @return
+	 * @throws Exception
+	 */
 	private List<String> replaceWithId(String[] namedUsers) throws Exception 
 	{
 		List<User> users = getUsers();
@@ -314,10 +336,5 @@ public class SlackBotApi
 		
 		return userIds;
 	}
-	
-	
-	
-	
-	
 
 }
