@@ -2,6 +2,8 @@ package com.sjwebb.knime.slack.nodes.messages.send;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
+import com.sjwebb.knime.slack.util.MessageSendingDialog;
+
 /**
  * <code>NodeDialog</code> for the "SendMessage" Node.
  * Send a slack message to a designated channel
@@ -13,25 +15,21 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
  * 
  * @author Samuel Webb
  */
-public class SendMessageNodeDialog extends DefaultNodeSettingsPane {
+public class SendMessageNodeDialog extends MessageSendingDialog<SlackSendMessageSettings>  {
 
-	private SlackSendMessageSettings settings;
 	
     /**
      * New pane for configuring the SendMessage node.
      */
     protected SendMessageNodeDialog() {
-    	settings = new SlackSendMessageSettings();
+    	super();
+    	super.settings = new SlackSendMessageSettings();
     	
     	addDialogComponent(settings.getDialogCompoinentOathToken());
     	addDialogComponent(settings.getDialogCompoinentChannel());
     	addDialogComponent(settings.getDialogCompoinentMessage());
     	
-    	createNewGroup("Username");
-    	setHorizontalPlacement(true);
-    	addDialogComponent(settings.getDialogComponentSetUsername());
-    	addDialogComponent(settings.getDialogComponentUsername());
-
+    	addAdvancedSettings();
     }
     
 }

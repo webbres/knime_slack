@@ -51,7 +51,7 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 //		
 //		api.postMessage(channel.get(), localSettings.getMessage());
 		
-		api.sendMessageToChannel(localSettings.getChannel(), localSettings.getMessage(), localSettings.getOptionalUsername());
+		api.sendMessageToChannel(localSettings.getChannel(), localSettings.getMessage(), localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
 		
 		BufferedDataTable[] out;
 		

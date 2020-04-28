@@ -1,19 +1,10 @@
 package com.sjwebb.knime.slack.nodes.messages.send.row;
 
-import java.util.Optional;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.knime.core.data.StringValue;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
-import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
-import org.knime.core.node.defaultnodesettings.DialogComponentString;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-import com.sjwebb.knime.slack.util.SlackOathTokenSettings;
+import com.sjwebb.knime.slack.util.SharedSendMessageSettings;
 
 /**
  * The settings for the SendRowMessage node. Provides settings and dialog components
@@ -23,14 +14,11 @@ import com.sjwebb.knime.slack.util.SlackOathTokenSettings;
  * @author Samuel
  *
  */
-public class SendRowMessageSettings extends SlackOathTokenSettings {
+public class SendRowMessageSettings extends SharedSendMessageSettings {
 
 	public static final String CONFIG_CHANNEL = "cfgChannel";
 	public static final String CONFIG_MESSAGE = "cfgMessage";
 	
-	public static final String USERNAME =  "Username";
-	public static final String SET_USERNAME = "Set-username";
-
 
 	
 	@Override
@@ -40,38 +28,9 @@ public class SendRowMessageSettings extends SlackOathTokenSettings {
 		addSetting(CONFIG_CHANNEL, new SettingsModelColumnName(CONFIG_CHANNEL, "channel"));
 		addSetting(CONFIG_MESSAGE, new SettingsModelColumnName(CONFIG_MESSAGE, "message"));
 
-		SettingsModelString username = new SettingsModelString(USERNAME, "KNIME Bot");
-		username.setEnabled(false);
-		
-		addSetting(USERNAME, username);
+	}
+	
 
-		SettingsModelBoolean setUsername = new SettingsModelBoolean(SET_USERNAME, false);
-		addSetting(SET_USERNAME, setUsername);
-		
-		
-		setUsername.addChangeListener(new ChangeListener() 
-		{
-			@Override
-			public void stateChanged(ChangeEvent e) 
-			{
-				username.setEnabled(setUsername.getBooleanValue());
-			}
-		});
-	}
-	
-	public String getUsername() {
-		return getSetting(USERNAME, SettingsModelString.class).getStringValue();
-	}
-	
-	public boolean isSetUsername()
-	{
-		return getBooleanValue(SET_USERNAME);
-	}
-	
-	public Optional<String> getOptionalUsername()
-	{
-		return isSetUsername() ? Optional.of(getUsername()) : Optional.empty();
-	}
 	
 
 	/**
@@ -111,14 +70,5 @@ public class SendRowMessageSettings extends SlackOathTokenSettings {
 		return getDialogColumnNameSelection(CONFIG_MESSAGE, "Message", 0, StringValue.class);
 	}
 	
-	public DialogComponent getDialogComponentUsername()
-	{
-		return new DialogComponentString(getSetting(USERNAME, SettingsModelString.class), "Username");
-	}
-	
-	public DialogComponent getDialogComponentSetUsername()
-	{
-		return new DialogComponentBoolean(getSetting(SET_USERNAME, SettingsModelBoolean.class), "Set username");
-	}
 
 }

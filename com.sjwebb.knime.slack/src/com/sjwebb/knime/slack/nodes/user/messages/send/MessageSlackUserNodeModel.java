@@ -1,5 +1,7 @@
 package com.sjwebb.knime.slack.nodes.user.messages.send;
 
+import java.util.Optional;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.node.BufferedDataContainer;
@@ -43,7 +45,7 @@ public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSla
 		ChatPostMessageResponse response = null;
 		try
 		{
-			response = api.directMessage(localSettings.getUser(), localSettings.getMessage(), localSettings.getOptionalUsername());
+			response = api.directMessage(localSettings.getUser(), localSettings.getMessage(), localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
 			
 			if(!response.isOk())
 			{

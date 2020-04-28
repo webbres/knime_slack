@@ -2,6 +2,8 @@ package com.sjwebb.knime.slack.nodes.user.messages.send;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
+import com.sjwebb.knime.slack.util.MessageSendingDialog;
+
 /**
  * <code>NodeDialog</code> for the "MessageSlackUser" Node.
  * Send a direct message to a KNIME user
@@ -13,24 +15,24 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
  * 
  * @author Sam Webb
  */
-public class MessageSlackUserNodeDialog extends DefaultNodeSettingsPane {
+public class MessageSlackUserNodeDialog extends MessageSendingDialog<MessageSlackUserSettings> {
 
     /**
      * New pane for configuring the MessageSlackUser node.
      */
     protected MessageSlackUserNodeDialog() 
     {
-    	MessageSlackUserSettings settings = new MessageSlackUserSettings();
+    	super();
+    	super.settings = new MessageSlackUserSettings();
     	
     	addDialogComponent(settings.getDialogCompoinentOathToken());
     	addDialogComponent(settings.getDialogComponentUser());
     	addDialogComponent(settings.getDialogCompoinentMessage());
     	addDialogComponent(settings.getDialogComponentFailOnError());
     
-    	createNewGroup("Username");
-    	setHorizontalPlacement(true);
-    	addDialogComponent(settings.getDialogComponentSetUsername());
-    	addDialogComponent(settings.getDialogComponentUsername());
+
+    
+    	addAdvancedSettings();
     }
 }
 
