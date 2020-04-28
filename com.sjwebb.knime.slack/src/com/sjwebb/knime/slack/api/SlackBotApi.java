@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.Slack;
+import com.slack.api.methods.request.chat.ChatPostMessageRequest;
+import com.slack.api.methods.request.chat.ChatPostMessageRequest.ChatPostMessageRequestBuilder;
 import com.slack.api.methods.request.users.UsersListRequest;
 import com.slack.api.methods.response.auth.AuthTestResponse;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
@@ -208,7 +210,7 @@ public class SlackBotApi
 	 * @throws Exception 
 	 * @throws KnimeSlackException 
 	 */
-	public String sendMessageToChannel(String channel, String message, Optional<String> username) throws KnimeSlackException, Exception
+	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws KnimeSlackException, Exception
 	{
 		List<ConversationType> types = new ArrayList<ConversationType>();
 		types.add(ConversationType.PRIVATE_CHANNEL);
@@ -225,16 +227,21 @@ public class SlackBotApi
 				  .filter(c -> c.getName().equals(channel))
 				  .findFirst().get();
 		
-		ChatPostMessageResponse postResponse;
-		if(username.isPresent()) 
-		{
-			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).username(username.get()).text(message));
-		} else
-		{
-			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(conversation.getId()).text(message));
-			
-		}
+
 		
+		ChatPostMessageRequestBuilder builder = ChatPostMessageRequest.builder().token(token).channel(conversation.getId()).text(message);
+		
+		if(username.isPresent())
+			builder.username(username.get());
+		
+		if(iconUrl.isPresent())
+			builder.iconUrl(iconUrl.get());
+		
+		if(iconEmoji.isPresent())
+			builder.iconEmoji(iconEmoji.get());
+		
+
+		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
 
 		
 		if(!postResponse.isOk())
@@ -269,12 +276,15 @@ public class SlackBotApi
 	/**
 	 * Send a direct message to a user
 	 * 
-	 * @param user - a comma seperated list of users. Can be user ids of display names.
-	 * @param message
+	 * @param user		 	a comma seperated list of users. Can be user ids of display names.
+	 * @param message		the text to send
+	 * @param username		the username to set for the bot, if unchanged provide Optional.empty()
+	 * @param iconUrl		a url to an image to use as the bot icon, if unchanged provide Optional.empty()
+	 * @param iconEmoji		a emoji to use for the icon image. If undesired provide Optional.empty(). This will overide an iconUrl if provided.
 	 * @return
 	 * @throws Exception 
 	 */
-	public ChatPostMessageResponse directMessage(String user, String message, Optional<String> username) throws Exception
+	public ChatPostMessageResponse directMessage(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
 	{
 		
 		String[] users = user.trim().replace(", ", ",").split(",");
@@ -289,20 +299,21 @@ public class SlackBotApi
 		}
 			
 		
+		ChatPostMessageRequestBuilder builder = ChatPostMessageRequest.builder().token(token).channel(response.getChannel().getId()).text(message);
 		
-//		ChatPostMessageResponse postResponse =
-//				  slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).text(message));
+		if(username.isPresent())
+			builder.username(username.get());
 		
-		ChatPostMessageResponse postResponse;
-		if(username.isPresent()) 
-		{
-			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).username(username.get()).text(message));
-		} else
-		{
-			postResponse = slack.methods().chatPostMessage(req -> req.token(token).channel(response.getChannel().getId()).text(message));
-			
-		}
-			
+		if(iconUrl.isPresent())
+			builder.iconUrl(iconUrl.get());
+		
+		if(iconEmoji.isPresent())
+			builder.iconEmoji(iconEmoji.get());
+		
+
+		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
+
+
 		if(!postResponse.isOk()) {
 			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");
 			throw new IOException("Failed to send message to user (" +  user + ")" + error);
