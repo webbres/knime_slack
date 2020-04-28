@@ -2,6 +2,8 @@ package com.sjwebb.knime.slack.nodes.messages.send.row;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
+import com.sjwebb.knime.slack.util.MessageSendingDialog;
+
 /**
  * <code>NodeDialog</code> for the "SendRowMessage" Node.
  * Send a message based on contents selected from a table row.
@@ -13,14 +15,15 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
  * 
  * @author Samuel Webb
  */
-public class SendRowMessageNodeDialog extends DefaultNodeSettingsPane {
+public class SendRowMessageNodeDialog extends MessageSendingDialog<SendRowMessageSettings> {
 
     /**
      * New pane for configuring the SendRowMessage node.
      */
     protected SendRowMessageNodeDialog() {
+    	super();
     	
-    	SendRowMessageSettings settings = new SendRowMessageSettings();
+    	super.settings = new SendRowMessageSettings();
     	addDialogComponent(settings.getDialogCompoinentOathToken());
     	
     	createNewGroup("Message details");
@@ -28,11 +31,10 @@ public class SendRowMessageNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(settings.getDialogComponentChannel());
     	addDialogComponent(settings.getDialogComponentMessage());
     	
-    	createNewGroup("Username");
-    	setHorizontalPlacement(true);
-    	addDialogComponent(settings.getDialogComponentSetUsername());
-    	addDialogComponent(settings.getDialogComponentUsername());
-
+    	
+    	addAdvancedSettings();
     }
+    
+  
 }
 
