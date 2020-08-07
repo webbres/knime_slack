@@ -29,7 +29,8 @@
         <option name="Message">The message to post</option>
         <option name="Set username">Whether to use the custom provided username instead of bot name.</option>
         <option name="Username">A custom username to set, this will overide the default bot name. Ignored if Set username is not checked.</option>
-
+        <option name="Lookup conversation">If checked will lookup the conversation matching the channel name and pass on the channel ID otherwise passes the channel name directly to the API call</option>
+  
 
     </fullDescription>
     

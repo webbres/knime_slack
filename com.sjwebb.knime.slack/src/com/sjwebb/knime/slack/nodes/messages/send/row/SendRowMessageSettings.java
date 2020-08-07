@@ -2,6 +2,7 @@ package com.sjwebb.knime.slack.nodes.messages.send.row;
 
 import org.knime.core.data.StringValue;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
 
 import com.sjwebb.knime.slack.util.SharedSendMessageSettings;
@@ -69,6 +70,7 @@ public class SendRowMessageSettings extends SharedSendMessageSettings {
 	{
 		return getDialogColumnNameSelection(CONFIG_MESSAGE, "Message", 0, StringValue.class);
 	}
+
 	
 
 }
