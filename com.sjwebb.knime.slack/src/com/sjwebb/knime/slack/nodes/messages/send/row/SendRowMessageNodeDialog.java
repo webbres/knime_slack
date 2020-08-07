@@ -30,6 +30,7 @@ public class SendRowMessageNodeDialog extends MessageSendingDialog<SendRowMessag
     	setHorizontalPlacement(true);
     	addDialogComponent(settings.getDialogComponentChannel());
     	addDialogComponent(settings.getDialogComponentMessage());
+    	addDialogComponent(settings.getDialogComponentLookup());
     	
     	
     	addAdvancedSettings();

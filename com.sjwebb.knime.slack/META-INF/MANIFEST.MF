@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Slack Integration - Node extension for KNIME Workbench
 Bundle-SymbolicName: com.sjwebb.knime.slack;singleton:=true
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-ClassPath: .,
  libs/javax.websocket-api-1.1.jar,
  libs/okio-1.13.0.jar,
