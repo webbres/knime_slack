@@ -1,7 +1,5 @@
 package com.sjwebb.knime.slack.nodes.messages.send;
 
-import java.util.Optional;
-
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.node.BufferedDataContainer;
@@ -44,7 +42,7 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 		
 //		Optional<Channel> channel = api.findChannelWithName(localSettings.getChannel());
 		
-		if(!api.channelExists(localSettings.getChannel()))
+		if(localSettings.lookupConversation() && !api.channelExists(localSettings.getChannel()))
 		{
 			throw new KnimeSlackException("Provided channel name of " + localSettings.getChannel() + " is not valid");
 		}
