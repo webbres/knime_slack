@@ -1,6 +1,6 @@
 # KNIME Slack Nodes
 
-The KNIME Slack Nodes interact with Slack through (https://github.com/slackapi/java-slack-sdk)[https://github.com/slackapi/java-slack-sdk]
+The KNIME Slack Nodes interact with Slack through [https://github.com/slackapi/java-slack-sdk](https://github.com/slackapi/java-slack-sdk)
 
 The current functionality includes
 
