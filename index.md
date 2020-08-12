@@ -1,37 +1,14 @@
-## Welcome to GitHub Pages
+# KNIME Slack Nodes
 
-You can use the [editor on GitHub](https://github.com/webbres/knime_slack/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+The KNIME Slack Nodes interact with Slack through (https://github.com/slackapi/java-slack-sdk)[https://github.com/slackapi/java-slack-sdk]
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The current functionality includes
 
-### Markdown
+* Getting Names
+* Getting channel information
+* Getting user information
+* Messaging a slack user
+* Message a slack channel (row based or single message on execution)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/webbres/knime_slack/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+The nodes are integrated into the KNIME community build system and can be found in the nightly or trusted community update sites.
