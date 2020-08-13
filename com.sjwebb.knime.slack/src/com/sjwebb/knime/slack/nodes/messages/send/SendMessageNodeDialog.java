@@ -28,6 +28,7 @@ public class SendMessageNodeDialog extends MessageSendingDialog<SlackSendMessage
     	addDialogComponent(settings.getDialogCompoinentOathToken());
     	addDialogComponent(settings.getDialogCompoinentChannel());
     	addDialogComponent(settings.getDialogCompoinentMessage());
+    	addDialogComponent(settings.getDialogComponentLookup());
     	
     	addAdvancedSettings();
     }
