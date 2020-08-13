@@ -200,6 +200,11 @@ public class SlackBotApi
 		return slackChannel.get().getId();
 	}
 
+	
+	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws KnimeSlackException, Exception
+	{
+		return sendMessageToChannel(channel, message, username, iconUrl, iconEmoji, true);
+	}
 	/**
 	 * Send a message to the named channel returning the timestamp of the message
 	 * 
@@ -210,26 +215,36 @@ public class SlackBotApi
 	 * @throws Exception 
 	 * @throws KnimeSlackException 
 	 */
-	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws KnimeSlackException, Exception
+	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
 	{
-		List<ConversationType> types = new ArrayList<ConversationType>();
-		types.add(ConversationType.PRIVATE_CHANNEL);
-		types.add(ConversationType.PUBLIC_CHANNEL);
+		String channelName;
 		
-		if(!channelExists(channel))
-			throw new KnimeSlackException("Slack channel " + channel + " not found");
-		
-		// First find the conversation to get the ID
-		ConversationsListResponse listResponse = 
-				  slack.methods().conversationsList(req -> req.token(token).types(types).limit(DEFAULT_LIMIT).excludeArchived(true));
-		
-		Conversation conversation = listResponse.getChannels().stream()
-				  .filter(c -> c.getName().equals(channel))
-				  .findFirst().get();
-		
+		if(lookupConversation) 
+		{
+			List<ConversationType> types = new ArrayList<ConversationType>();
+			types.add(ConversationType.PRIVATE_CHANNEL);
+			types.add(ConversationType.PUBLIC_CHANNEL);
+			
+			if(!channelExists(channel))
+				throw new KnimeSlackException("Slack channel " + channel + " not found");
+			
+			// First find the conversation to get the ID
+			ConversationsListResponse listResponse = 
+					  slack.methods().conversationsList(req -> req.token(token).types(types).limit(DEFAULT_LIMIT).excludeArchived(true));
+			
+			
+			Conversation conversation = listResponse.getChannels().stream()
+					  .filter(c -> c.getName().equals(channel))
+					  .findFirst().get();
+			
+			channelName = conversation.getId();
+		} else
+		{
+			channelName = channel;
+		}
 
 		
-		ChatPostMessageRequestBuilder builder = ChatPostMessageRequest.builder().token(token).channel(conversation.getId()).text(message);
+		ChatPostMessageRequestBuilder builder = ChatPostMessageRequest.builder().token(token).channel(channelName).text(message);
 		
 		if(username.isPresent())
 			builder.username(username.get());

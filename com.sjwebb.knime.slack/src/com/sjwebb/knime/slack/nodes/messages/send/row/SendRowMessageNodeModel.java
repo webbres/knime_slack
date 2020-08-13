@@ -64,21 +64,31 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 				String channel = ((StringValue) channelCell).getStringValue();
 				String message = ((StringValue) messageCell).getStringValue();
 
+				
+				
+				
 
-				if (api.channelExists(channel)) 
+				if (localSettings.lookupConversation() && !api.channelExists(channel)) 
 				{
+					addErrorRow(container, row, "Channel does not exist");
+
+				} else {
+
 					try 
 					{
-						String timestamp = api.sendMessageToChannel(channel, message, localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
+						String timestamp = api.sendMessageToChannel(
+								channel, 
+								message, 
+								localSettings.getOptionalUsername(), 
+								localSettings.getOptionalIconUrl(), 
+								localSettings.getOptionalIconEmoji(), 
+								localSettings.lookupConversation());
 						addRow(container, row, timestamp);
 					} catch (Exception e) 
 					{
 						e.printStackTrace();
 						addErrorRow(container, row, e.getMessage());
 					}
-
-				} else {
-					addErrorRow(container, row, "Channel does not exist");
 				}
 			}
 

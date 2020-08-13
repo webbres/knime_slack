@@ -32,6 +32,8 @@ public class SharedSendMessageSettings extends SlackOathTokenSettings
 	
 	private static final String DEFAULT_URL = "https://forum-cdn.knime.com/uploads/default/original/1X/ab3ccf34482a0329361734a18199390177204f15.png";
 	private static final String DEFAULT_EMOJI = ":chart_with_upwards_trend:";
+	
+	public static final String CONFIG_LOOKUP = "cfgLookup";
 
 	@Override
 	protected void addSettings() 
@@ -95,6 +97,7 @@ public class SharedSendMessageSettings extends SlackOathTokenSettings
 			}
 		});
 				
+		addSetting(CONFIG_LOOKUP, new SettingsModelBoolean(CONFIG_LOOKUP, true));
 	}
 
 	public Optional<String> getOptionalUsername()
@@ -153,5 +156,24 @@ public class SharedSendMessageSettings extends SlackOathTokenSettings
 		return new DialogComponentBoolean(getSetting(SET_ICON_EMOJI, SettingsModelBoolean.class), "Set Icon emoji");
 	}
 	
+	
+	/**
+	 * Dialog component for whether to lookup the conversation of use the channel name directly 
+	 * 
+	 * @return
+	 */
+	public DialogComponent getDialogComponentLookup()
+	{
+		return getBooleanComponent(CONFIG_LOOKUP, "Lookup conversation");
+	}
+
+
+	/**
+	 * Whether to lookup the conversation of use the channel name directly 
+	 * @return
+	 */
+	public boolean lookupConversation() {
+		return getBooleanValue(CONFIG_LOOKUP);
+	}
 	
 }
