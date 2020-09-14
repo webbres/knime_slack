@@ -1,8 +1,8 @@
 package com.sjwebb.knime.slack.nodes.messages.send;
 
+import java.io.IOException;
+
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataTableSpecCreator;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -11,7 +11,8 @@ import org.knime.core.node.port.PortTypeRegistry;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
-import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
+import com.sjwebb.knime.slack.util.SlackLocalSettingsNodeModel;
+import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
 /**
  * This is the model implementation of SendMessage. Send a slack message to a
@@ -19,7 +20,7 @@ import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
  *
  * @author Samuel Webb
  */
-public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessageSettings> {
+public class SendMessageNodeModel extends SlackLocalSettingsNodeModel<SlackSendMessageSettings> {
 
 
 	
@@ -49,7 +50,7 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 //		
 //		api.postMessage(channel.get(), localSettings.getMessage());
 		
-		api.sendMessageToChannel(
+		ChatPostMessageResponse response = api.sendMessageToChannel(
 				localSettings.getChannel(), 
 				localSettings.getMessage(), 
 				localSettings.getOptionalUsername(), 
@@ -57,6 +58,18 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 				localSettings.getOptionalIconEmoji(), 
 				localSettings.lookupConversation()
 				);
+		
+		logResponse(response);
+		
+		if(!response.isOk())
+		{
+			if(response.getError().equals("missing_scope")) {
+				throw new IOException("Failed to post message: " + response.getError() + " " + response.getNeeded());
+			} else {
+				throw new IOException("Failed to post message: " + response.getError());
+			}
+
+		}
 		
 		BufferedDataTable[] out;
 		
@@ -71,21 +84,6 @@ public class SendMessageNodeModel extends LocalSettingsNodeModel<SlackSendMessag
 		return out;
 	}
 
-
-	private BufferedDataTable createEmptyTable(ExecutionContext exec) 
-	{
-		BufferedDataContainer container = exec.createDataContainer(getEmptySpec());
-		container.close();
-		
-		
-		return container.getTable();
-	}
-
-	private DataTableSpec getEmptySpec() {
-		
-		DataTableSpecCreator creator = new DataTableSpecCreator();
-		return creator.createSpec();
-	}
 
 	/**
 	 * {@inheritDoc}

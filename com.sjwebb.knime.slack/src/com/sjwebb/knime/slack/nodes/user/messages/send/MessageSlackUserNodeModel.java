@@ -1,7 +1,5 @@
 package com.sjwebb.knime.slack.nodes.user.messages.send;
 
-import java.util.Optional;
-
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.node.BufferedDataContainer;
@@ -12,7 +10,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
-import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
+import com.sjwebb.knime.slack.util.SlackLocalSettingsNodeModel;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
 /**
@@ -21,7 +19,7 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
  *
  * @author Sam Webb
  */
-public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSlackUserSettings> {
+public class MessageSlackUserNodeModel extends SlackLocalSettingsNodeModel<MessageSlackUserSettings> {
 
 
 	
@@ -46,6 +44,8 @@ public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSla
 		try
 		{
 			response = api.directMessage(localSettings.getUser(), localSettings.getMessage(), localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
+			
+			logResponse(response);
 			
 			if(!response.isOk())
 			{
@@ -80,21 +80,6 @@ public class MessageSlackUserNodeModel extends LocalSettingsNodeModel<MessageSla
 		return out;
 	}
 
-
-	private BufferedDataTable createEmptyTable(ExecutionContext exec) 
-	{
-		BufferedDataContainer container = exec.createDataContainer(getEmptySpec());
-		container.close();
-		
-		
-		return container.getTable();
-	}
-
-	private DataTableSpec getEmptySpec() 
-	{
-		DataTableSpecCreator creator = new DataTableSpecCreator();
-		return creator.createSpec();
-	}
 
 	/**
 	 * {@inheritDoc}

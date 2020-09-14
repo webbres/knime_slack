@@ -1,5 +1,7 @@
 package com.sjwebb.knime.slack.nodes.messages.send.row;
 
+import java.io.IOException;
+
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
@@ -15,8 +17,9 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
-import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
 import com.sjwebb.knime.slack.util.SlackBotApiFactory;
+import com.sjwebb.knime.slack.util.SlackLocalSettingsNodeModel;
+import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
 /**
  * This is the model implementation of SendRowMessage. Send a message based on
@@ -24,7 +27,7 @@ import com.sjwebb.knime.slack.util.SlackBotApiFactory;
  *
  * @author Samuel Webb
  */
-public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessageSettings> {
+public class SendRowMessageNodeModel extends SlackLocalSettingsNodeModel<SendRowMessageSettings> {
 
 	/**
 	 * {@inheritDoc}
@@ -74,20 +77,36 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 
 				} else {
 
+					ChatPostMessageResponse response = null;
 					try 
 					{
-						String timestamp = api.sendMessageToChannel(
+						response = api.sendMessageToChannel(
 								channel, 
 								message, 
 								localSettings.getOptionalUsername(), 
 								localSettings.getOptionalIconUrl(), 
 								localSettings.getOptionalIconEmoji(), 
 								localSettings.lookupConversation());
-						addRow(container, row, timestamp);
+						
+						if(!response.isOk())
+						{
+							if(response.getError().equals("missing_scope")) {
+								setWarningMessage(response.getError());
+								throw new IOException("Failed to post message: " + response.getError() + " " + response.getNeeded());
+							} else {
+								setWarningMessage(response.getError());
+								throw new IOException("Failed to post message: " + response.getError());
+							}
+				
+						}
+						
+						addRow(container, row, response.getMessage().getTs());
 					} catch (Exception e) 
 					{
 						e.printStackTrace();
 						addErrorRow(container, row, e.getMessage());
+					} finally {
+						logResponse(response);
 					}
 				}
 			}
@@ -98,6 +117,7 @@ public class SendRowMessageNodeModel extends LocalSettingsNodeModel<SendRowMessa
 
 		return new BufferedDataTable[] { container.getTable() };
 	}
+
 
 	private void addRow(BufferedDataContainer container, DataRow row, String timestamp) {
 
