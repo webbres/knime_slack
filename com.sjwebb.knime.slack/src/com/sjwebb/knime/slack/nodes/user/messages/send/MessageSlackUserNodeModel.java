@@ -1,5 +1,7 @@
 package com.sjwebb.knime.slack.nodes.user.messages.send;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.node.BufferedDataContainer;
@@ -40,10 +42,17 @@ public class MessageSlackUserNodeModel extends SlackLocalSettingsNodeModel<Messa
 
 		SlackBotApi api = new SlackBotApi(localSettings.getOathToken());
 
-		ChatPostMessageResponse response = null;
+		exec.setMessage("Sending message");
+		
+		CompletableFuture<ChatPostMessageResponse> future = null;
 		try
 		{
-			response = api.directMessage(localSettings.getUser(), localSettings.getMessage(), localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
+			future = api.directMessageAsync(localSettings.getUser(), localSettings.getMessage(), localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
+			
+			exec.setMessage("Waiting on message to complete");
+			ChatPostMessageResponse response = future.get();
+			
+			exec.setMessage("Processing response");
 			
 			logResponse(response);
 			

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
@@ -255,7 +256,25 @@ public class SlackBotApi
 	 * @throws KnimeSlackException 
 	 */
 	public ChatPostMessageResponse sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
-	{
+	{	
+		ChatPostMessageRequestBuilder builder = configureChannelMessageBuilder(channel, message, username, iconUrl, iconEmoji, lookupConversation);
+		
+		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+	public CompletableFuture<ChatPostMessageResponse> sendMessageToChannelAsync(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
+	{	
+		ChatPostMessageRequestBuilder builder = configureChannelMessageBuilder(channel, message, username, iconUrl, iconEmoji, lookupConversation);
+		
+		CompletableFuture<ChatPostMessageResponse>	postResponse = slack.methodsAsync().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+
+	private ChatPostMessageRequestBuilder configureChannelMessageBuilder(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws Exception {
 		String channelName;
 		
 		// If looking up a conversation we get all available conversations and then search the list based on the provided
@@ -284,22 +303,7 @@ public class SlackBotApi
 		if(iconEmoji.isPresent())
 			builder.iconEmoji(iconEmoji.get());
 		
-
-		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
-
-		// This should be delegated to the node so that a more appropriate error can be handled.
-//		if(!postResponse.isOk())
-//		{
-//			if(postResponse.getError().equals("missing_scope")) {
-//				throw new IOException("Failed to post message: " + postResponse.getError() + " " + postResponse.getNeeded());
-//			} else {
-//				throw new IOException("Failed to post message: " + postResponse.getError());
-//			}
-//
-//		}
-			
-
-		return postResponse;
+		return builder;
 	}
 
 	/**
@@ -329,6 +333,36 @@ public class SlackBotApi
 	public ChatPostMessageResponse directMessage(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
 	{
 		
+		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(user, message, username, iconUrl, iconEmoji);
+
+		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+	/**
+	 * Performs the same call as {@link #directMessage(String, String, Optional, Optional, Optional)} but uses the async method to attempt to respect API Rate Limits
+	 * @param user
+	 * @param message
+	 * @param username
+	 * @param iconUrl
+	 * @param iconEmoji
+	 * @return
+	 * @throws Exception
+	 */
+	public CompletableFuture<ChatPostMessageResponse> directMessageAsync(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
+	{
+		
+		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(user, message, username, iconUrl, iconEmoji);
+		
+
+		CompletableFuture<ChatPostMessageResponse>	postResponse = slack.methodsAsync().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+	private ChatPostMessageRequestBuilder buildChatMessageToUser(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
+	{
 		String[] users = user.trim().replace(", ", ",").split(",");
 		
 		List<String> usersIds = replaceWithId(users);
@@ -352,17 +386,7 @@ public class SlackBotApi
 		if(iconEmoji.isPresent())
 			builder.iconEmoji(iconEmoji.get());
 		
-
-		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
-
-
-		// This should be delegated to the node so that a more appropriate error can be handled.
-//		if(!postResponse.isOk()) {
-//			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");
-//			throw new IOException("Failed to send message to user (" +  user + ")" + error);
-//		}
-			
-		return postResponse;
+		return builder;
 	}
 
 	/**

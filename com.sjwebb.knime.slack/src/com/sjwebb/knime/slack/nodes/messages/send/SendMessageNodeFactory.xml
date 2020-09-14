@@ -21,6 +21,12 @@
        		set a username parameter. If changing the display name / username of the source of the message is desirable then check 'Set username' and 
        		provide the username to post the message as.
        	</p>
+       	
+       	<p>
+        	<b>Rate Limiting: </b>
+        	The underlying <a href="https://slack.dev/java-slack-sdk/guides/web-api-basics">Java Slack API</a> offers an async approach where it attempts to manage Rate Limits on API requests. 
+        	This node node uses the aysnc version of the method and will send approximately 1 message per second.
+        </p>
         
         </intro>
         
