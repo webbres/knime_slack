@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.NodeLogger;
+
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.Slack;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
@@ -237,7 +239,7 @@ public class SlackBotApi
 	}
 
 	
-	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws KnimeSlackException, Exception
+	public ChatPostMessageResponse sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws KnimeSlackException, Exception
 	{
 		return sendMessageToChannel(channel, message, username, iconUrl, iconEmoji, true);
 	}
@@ -252,10 +254,12 @@ public class SlackBotApi
 	 * @throws Exception 
 	 * @throws KnimeSlackException 
 	 */
-	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
+	public ChatPostMessageResponse sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
 	{
 		String channelName;
 		
+		// If looking up a conversation we get all available conversations and then search the list based on the provided
+		// channel name and then use the channels ID to post the message to. Otherwise we use the channel name directly.
 		if(lookupConversation) 
 		{			
 			Conversation conversation = getConversations(false, true).stream()
@@ -283,21 +287,19 @@ public class SlackBotApi
 
 		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
 
-		
-		if(!postResponse.isOk())
-		{
-			if(postResponse.getError().equals("missing_scope")) {
-				throw new IOException("Failed to post message: " + postResponse.getError() + " " + postResponse.getNeeded());
-			} else {
-				throw new IOException("Failed to post message: " + postResponse.getError());
-			}
-
-		}
+		// This should be delegated to the node so that a more appropriate error can be handled.
+//		if(!postResponse.isOk())
+//		{
+//			if(postResponse.getError().equals("missing_scope")) {
+//				throw new IOException("Failed to post message: " + postResponse.getError() + " " + postResponse.getNeeded());
+//			} else {
+//				throw new IOException("Failed to post message: " + postResponse.getError());
+//			}
+//
+//		}
 			
-		
-		String messageTs = postResponse.getMessage().getTs();
-		
-		return messageTs;
+
+		return postResponse;
 	}
 
 	/**
@@ -354,10 +356,11 @@ public class SlackBotApi
 		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
 
 
-		if(!postResponse.isOk()) {
-			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");
-			throw new IOException("Failed to send message to user (" +  user + ")" + error);
-		}
+		// This should be delegated to the node so that a more appropriate error can be handled.
+//		if(!postResponse.isOk()) {
+//			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");
+//			throw new IOException("Failed to send message to user (" +  user + ")" + error);
+//		}
 			
 		return postResponse;
 	}
@@ -396,6 +399,19 @@ public class SlackBotApi
 		}
 		
 		return userIds;
+	}
+
+	public void logResponse(ChatPostMessageResponse response, NodeLogger logger) 
+	{
+		logger.debug("Slack node class: " + getClass());
+		logger.debug("Response: " + response);
+		
+		if (response != null) {
+			logger.debug("Chat message isOk: " + response.isOk());
+			logger.debug("Chat message errors: " + response.getError());
+			logger.debug("Chat message warning: " + response.getWarning());
+		}
+		
 	}
 
 }
