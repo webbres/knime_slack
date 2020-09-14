@@ -1,6 +1,7 @@
 package com.sjwebb.knime.slack.nodes.messages.send.row;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -77,16 +78,22 @@ public class SendRowMessageNodeModel extends SlackLocalSettingsNodeModel<SendRow
 
 				} else {
 
+					CompletableFuture<ChatPostMessageResponse> future = null;
 					ChatPostMessageResponse response = null;
 					try 
 					{
-						response = api.sendMessageToChannel(
+						future = api.sendMessageToChannelAsync(
 								channel, 
 								message, 
 								localSettings.getOptionalUsername(), 
 								localSettings.getOptionalIconUrl(), 
 								localSettings.getOptionalIconEmoji(), 
 								localSettings.lookupConversation());
+						
+						exec.setMessage("waiting on message sending to complete: " + row.getKey().getString());
+						
+						response = future.get();
+						exec.setMessage("");
 						
 						if(!response.isOk())
 						{
