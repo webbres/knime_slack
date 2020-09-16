@@ -18,7 +18,7 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
-import com.sjwebb.knime.slack.util.SlackBotApiFactory;
+import com.sjwebb.knime.slack.util.KnimeSettingsSlackBotApiFactory;
 import com.sjwebb.knime.slack.util.SlackLocalSettingsNodeModel;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
@@ -48,7 +48,7 @@ public class SendRowMessageNodeModel extends SlackLocalSettingsNodeModel<SendRow
 
 		try 
 		{
-			api = SlackBotApiFactory.createFromSettings(localSettings);
+			api = KnimeSettingsSlackBotApiFactory.createFromSettings(localSettings);
 		} catch (Exception e) 
 		{
 			e.printStackTrace();
@@ -57,6 +57,7 @@ public class SendRowMessageNodeModel extends SlackLocalSettingsNodeModel<SendRow
 
 		for (DataRow row : in) 
 		{
+			exec.checkCanceled();
 			DataCell channelCell = row.getCell(channelIndex);
 			DataCell messageCell = row.getCell(messageIndex);
 

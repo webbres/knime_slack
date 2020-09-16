@@ -8,6 +8,7 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.PortType;
 
+import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
 public class SlackLocalSettingsNodeModel<T extends NodeSettingCollection> extends LocalSettingsNodeModel<T> 
@@ -25,12 +26,27 @@ public class SlackLocalSettingsNodeModel<T extends NodeSettingCollection> extend
 	/**
 	 * Prints some debug info to the {@link NodeLogger} instance
 	 * @param response
+	 * @throws KnimeSlackException 
 	 */
-	protected void logResponse(ChatPostMessageResponse response) {
+	protected void logResponse(ChatPostMessageResponse response) throws KnimeSlackException {
 				
-		SlackBotApiFactory.getInstance().logResponse(response, getLogger());
-
+		try 
+		{
+			NodeLogger logger = getLogger();
+			logger.debug("Slack node class: " + getClass());
+			logger.debug("Response: " + response);
+			
+			if (response != null) {
+				logger.debug("Chat message isOk: " + response.isOk());
+				logger.debug("Chat message errors: " + response.getError());
+				logger.debug("Chat message warning: " + response.getWarning());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
+
 	
 	protected BufferedDataTable createEmptyTable(ExecutionContext exec) 
 	{

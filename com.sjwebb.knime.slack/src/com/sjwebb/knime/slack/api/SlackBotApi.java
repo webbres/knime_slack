@@ -11,6 +11,10 @@ import org.knime.core.node.NodeLogger;
 
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.Slack;
+import com.slack.api.SlackConfig;
+import com.slack.api.app_backend.config.SlackAppConfig;
+import com.slack.api.methods.metrics.MetricsDatastore;
+import com.slack.api.methods.metrics.impl.MemoryMetricsDatastore;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest.ChatPostMessageRequestBuilder;
 import com.slack.api.methods.request.conversations.ConversationsListRequest;
@@ -36,7 +40,7 @@ import com.slack.api.model.User;
  */
 public class SlackBotApi 
 {
-
+	
 	private Slack slack;
 
 	private String token;
@@ -44,11 +48,17 @@ public class SlackBotApi
 	private static final int DEFAULT_LIMIT = 200;
 	private static final int MAX_LIMIT = 1000;
 
-	public SlackBotApi(String token) {
-		this.slack = Slack.getInstance();
+	protected SlackBotApi(String token) {
+		SlackConfig config = new SlackConfig();
+//		config.getMethodsConfig().setMetricsDatastore(SlackBotApiFactory.getStoreForToken(token));
+		this.slack = Slack.getInstance(config);
 		this.token = token;
 	}
 
+//	public void setDataStore(MemoryMetricsDatastore storeForToken) {
+//		this.slack.getConfig().getMethodsConfig().setMetricsDatastore(storeForToken);
+//	}
+	
 	/**
 	 * Call check auth: https://api.slack.com/methods/auth.test 
 	 * @return	The user authenticated as
@@ -154,18 +164,20 @@ public class SlackBotApi
 				
 		UsersListRequestBuilder builder = UsersListRequest.builder().token(token).limit(DEFAULT_LIMIT);
 		
-		UsersListResponse respone = slack.methods().usersList(builder.build());
+		CompletableFuture<UsersListResponse> future = slack.methodsAsync().usersList(builder.build());
 		
-		if(!respone.isOk())
+		UsersListResponse response = future.get();
+		
+		if(!response.isOk())
 		{
-			throw new Exception(respone.getError() + " - needed: " + respone.getNeeded());
+			throw new Exception(response.getError() + " - needed: " + response.getNeeded());
 		}
 		
-		List<User> users = respone.getMembers();
+		List<User> users = response.getMembers();
 		
 		
 		// Now progress the cursor if exists
-		String cursor = respone.getResponseMetadata().getNextCursor();
+		String cursor = response.getResponseMetadata().getNextCursor();
 		
 		while(cursor != null && !cursor.equals("")) {
 			builder = builder.cursor(cursor);
@@ -424,18 +436,9 @@ public class SlackBotApi
 		
 		return userIds;
 	}
-
-	public void logResponse(ChatPostMessageResponse response, NodeLogger logger) 
+	
+	public MetricsDatastore getMetrics() 
 	{
-		logger.debug("Slack node class: " + getClass());
-		logger.debug("Response: " + response);
-		
-		if (response != null) {
-			logger.debug("Chat message isOk: " + response.isOk());
-			logger.debug("Chat message errors: " + response.getError());
-			logger.debug("Chat message warning: " + response.getWarning());
-		}
-		
+		return this.slack.getConfig().getMethodsConfig().getMetricsDatastore();
 	}
-
 }
