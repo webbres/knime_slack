@@ -11,6 +11,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
+import com.sjwebb.knime.slack.api.SlackBotApiFactory;
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.sjwebb.knime.slack.util.SlackLocalSettingsNodeModel;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
@@ -40,7 +41,7 @@ public class SendMessageNodeModel extends SlackLocalSettingsNodeModel<SlackSendM
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
 			throws Exception {
 
-		SlackBotApi api = new SlackBotApi(localSettings.getOathToken());
+		SlackBotApi api = SlackBotApiFactory.getInstanceForToken(localSettings.getOathToken());
 		
 //		Optional<Channel> channel = api.findChannelWithName(localSettings.getChannel());
 		

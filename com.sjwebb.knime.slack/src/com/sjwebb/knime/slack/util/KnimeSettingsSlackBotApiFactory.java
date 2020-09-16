@@ -5,23 +5,25 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
+import com.sjwebb.knime.slack.api.SlackBotApiFactory;
 import com.sjwebb.knime.slack.api.SlackBotLegacyApi;
+import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.sjwebb.knime.slack.preferences.SlackPreferencePage;
 
-public class SlackBotApiFactory {
+public class KnimeSettingsSlackBotApiFactory {
 
-	private static SlackBotApi API;
 
-	public static SlackBotApi getInstance() {
 
-		if (API == null)
-			API = new SlackBotApi(getDefaultOAuthToken());
+	public static SlackBotApi getInstance() throws KnimeSlackException {
+		
+		if(getDefaultOAuthToken() == null || getDefaultOAuthToken().equals(""))
+			throw new KnimeSlackException("No default token set in preferences");
 
-		return API;
+		return SlackBotApiFactory.getInstanceForToken(getDefaultOAuthToken());
 	}
 
-	public static SlackBotApi createFromSettings(SlackOathTokenSettings localSettings) {
-		return new SlackBotApi(localSettings.getOathToken());
+	public static SlackBotApi createFromSettings(SlackOathTokenSettings localSettings) throws KnimeSlackException {
+		return SlackBotApiFactory.getInstanceForToken(localSettings.getOathToken());
 	}
 	
 	public static SlackBotLegacyApi createLegacyFromSettings(SlackOathTokenSettings localSettings) {

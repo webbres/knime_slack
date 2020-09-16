@@ -17,7 +17,7 @@ import org.knime.core.node.InvalidSettingsException;
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
-import com.sjwebb.knime.slack.util.SlackBotApiFactory;
+import com.sjwebb.knime.slack.util.KnimeSettingsSlackBotApiFactory;
 import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.slack.api.model.Message;
 
@@ -45,7 +45,7 @@ public class ChannelHistoryNodeModel2 extends LocalSettingsNodeModel<ChannelHist
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
 			throws Exception {
 
-		SlackBotApi api = SlackBotApiFactory.createFromSettings(localSettings);
+		SlackBotApi api = KnimeSettingsSlackBotApiFactory.createFromSettings(localSettings);
 		
 		getLogger().debug(api.checkAuth());
 

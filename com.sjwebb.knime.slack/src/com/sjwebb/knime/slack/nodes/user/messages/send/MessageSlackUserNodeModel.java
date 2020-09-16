@@ -3,8 +3,6 @@ package com.sjwebb.knime.slack.nodes.user.messages.send;
 import java.util.concurrent.CompletableFuture;
 
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataTableSpecCreator;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -12,6 +10,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
+import com.sjwebb.knime.slack.api.SlackBotApiFactory;
 import com.sjwebb.knime.slack.util.SlackLocalSettingsNodeModel;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
@@ -21,10 +20,9 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
  *
  * @author Sam Webb
  */
-public class MessageSlackUserNodeModel extends SlackLocalSettingsNodeModel<MessageSlackUserSettings> {
+public class MessageSlackUserNodeModel extends SlackLocalSettingsNodeModel<MessageSlackUserSettings> 
+{
 
-
-	
 	/**
 	 * Constructor for the node model.
 	 */
@@ -40,7 +38,7 @@ public class MessageSlackUserNodeModel extends SlackLocalSettingsNodeModel<Messa
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
 			throws Exception {
 
-		SlackBotApi api = new SlackBotApi(localSettings.getOathToken());
+		SlackBotApi api = SlackBotApiFactory.getInstanceForToken(localSettings.getOathToken());
 
 		exec.setMessage("Sending message");
 		
