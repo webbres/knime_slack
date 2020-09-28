@@ -27,6 +27,7 @@
 	</node>
 	<node category-path="/community/c.s.k.slack" factory-class="com.sjwebb.knime.slack.nodes.metrics.SlackMetricsNodeFactory" id="com.sjwebb.knime.slack.nodes.metrics.SlackMetricsNodeFactory"/>
 
+<node category-path="/community/c.s.k.slack" factory-class="com.sjwebb.knime.slack.nodes.user.lookup.email.UsersLookupByEmailNodeFactory" id="com.sjwebb.knime.slack.nodes.user.lookup.email.UsersLookupByEmailNodeFactory"/>
 </extension>
    <extension point="org.eclipse.ui.preferencePages">
       <page category="org.knime.workbench.ui.preferences" class="com.sjwebb.knime.slack.preferences.SlackPreferencePage" id="com.sjwebb.knime.slack.preferences" name="Slack Preference Page">
