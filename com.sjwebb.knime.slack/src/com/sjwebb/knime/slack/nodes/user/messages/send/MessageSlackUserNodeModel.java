@@ -1,5 +1,6 @@
 package com.sjwebb.knime.slack.nodes.user.messages.send;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.knime.core.data.DataTableSpec;
@@ -45,7 +46,11 @@ public class MessageSlackUserNodeModel extends SlackLocalSettingsNodeModel<Messa
 		CompletableFuture<ChatPostMessageResponse> future = null;
 		try
 		{
-			future = api.directMessageAsync(localSettings.getUser(), localSettings.getMessage(), localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
+			// Convert the string provided in the dialog to a list of unique user identifiers
+			String[] users = localSettings.getUser().trim().replace(", ", ",").split(",");
+			List<String> usernames = api.replaceUsernameWithId(users);
+			
+			future = api.directMessageAsync(usernames, localSettings.getMessage(), localSettings.getOptionalUsername(), localSettings.getOptionalIconUrl(), localSettings.getOptionalIconEmoji());
 			
 			exec.setMessage("Waiting on message to complete");
 			ChatPostMessageResponse response = future.get();
