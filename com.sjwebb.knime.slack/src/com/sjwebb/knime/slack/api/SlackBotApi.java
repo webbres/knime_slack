@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
@@ -21,7 +22,10 @@ import com.slack.api.methods.request.conversations.ConversationsListRequest;
 import com.slack.api.methods.request.conversations.ConversationsListRequest.ConversationsListRequestBuilder;
 import com.slack.api.methods.request.users.UsersListRequest;
 import com.slack.api.methods.request.users.UsersListRequest.UsersListRequestBuilder;
+import com.slack.api.methods.request.users.UsersLookupByEmailRequest;
+import com.slack.api.methods.request.users.UsersLookupByEmailRequest.UsersLookupByEmailRequestBuilder;
 import com.slack.api.methods.response.auth.AuthTestResponse;
+import com.slack.api.methods.response.channels.UsersLookupByEmailResponse;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.slack.api.methods.response.conversations.ConversationsListResponse;
@@ -440,5 +444,23 @@ public class SlackBotApi
 	public MetricsDatastore getMetrics() 
 	{
 		return this.slack.getConfig().getMethodsConfig().getMetricsDatastore();
+	}
+
+	/**
+	 * Lookup a user by email. Uses an async call and waits for the response.
+	 * @param email
+	 * @return
+	 * @throws Exception
+	 */
+	public UsersLookupByEmailResponse getUser(String email) throws Exception
+	{
+		
+		UsersLookupByEmailRequestBuilder req = UsersLookupByEmailRequest.builder().token(token).email(email);
+		
+		CompletableFuture<UsersLookupByEmailResponse> future = slack.methodsAsync().usersLookupByEmail(req.build());
+		
+		UsersLookupByEmailResponse response = future.get();
+		
+		return response;
 	}
 }
