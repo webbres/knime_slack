@@ -348,8 +348,11 @@ public class SlackBotApi
 	 */
 	public ChatPostMessageResponse directMessage(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
 	{
+		String[] users = user.trim().replace(", ", ",").split(",");
 		
-		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(user, message, username, iconUrl, iconEmoji);
+		List<String> usersIds = replaceUsernameWithId(users);
+		
+		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(usersIds, message, username, iconUrl, iconEmoji);
 
 		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
 
@@ -365,11 +368,30 @@ public class SlackBotApi
 	 * @param iconEmoji
 	 * @return
 	 * @throws Exception
+	 * @deprecated Should call {@link #directMessageAsync(List, String, Optional, Optional, Optional)} having already handled the users string
 	 */
 	public CompletableFuture<ChatPostMessageResponse> directMessageAsync(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
 	{
+		String[] users = user.trim().replace(", ", ",").split(",");
 		
-		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(user, message, username, iconUrl, iconEmoji);
+		List<String> usersIds = replaceUsernameWithId(users);
+
+		return directMessageAsync(usersIds, message, username, iconUrl, iconEmoji);
+	}
+	
+	/**
+	 * Performs the same call as {@link #directMessage(String, String, Optional, Optional, Optional)} but uses the async method to attempt to respect API Rate Limits
+	 * @param user
+	 * @param message
+	 * @param username
+	 * @param iconUrl
+	 * @param iconEmoji
+	 * @return
+	 * @throws Exception
+	 */
+	public CompletableFuture<ChatPostMessageResponse> directMessageAsync(List<String> usersIds, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
+	{	
+		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(usersIds, message, username, iconUrl, iconEmoji);
 		
 
 		CompletableFuture<ChatPostMessageResponse>	postResponse = slack.methodsAsync().chatPostMessage(builder.build());
@@ -377,20 +399,16 @@ public class SlackBotApi
 		return postResponse;
 	}
 	
-	private ChatPostMessageRequestBuilder buildChatMessageToUser(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
+	private ChatPostMessageRequestBuilder buildChatMessageToUser(List<String> usersIds, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
 	{
-		String[] users = user.trim().replace(", ", ",").split(",");
-		
-		List<String> usersIds = replaceWithId(users);
 		
 		ConversationsOpenResponse response = slack.methods().conversationsOpen(req -> req.token(token).returnIm(true).users(usersIds));
 		
 		if(!response.isOk()) {
 			String error = response.getError() + " - " + (response.getNeeded() != null ? " needed: " + response.getNeeded() : "");
-			throw new IOException("Failed to open conversation with user (" +  user + ")" + error);
+			throw new IOException("Failed to open conversation with user (" +  usersIds.toString() + ")" + error);
 		}
 			
-		
 		ChatPostMessageRequestBuilder builder = ChatPostMessageRequest.builder().token(token).channel(response.getChannel().getId()).text(message);
 		
 		if(username.isPresent())
@@ -404,6 +422,8 @@ public class SlackBotApi
 		
 		return builder;
 	}
+	
+	
 
 	/**
 	 * Return a new list of usernames having replace display names (@Name1, @Name2) with the unique slack username
@@ -411,30 +431,37 @@ public class SlackBotApi
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> replaceWithId(String[] namedUsers) throws Exception 
+	public List<String> replaceUsernameWithId(String[] namedUsers) throws Exception 
 	{
+		// Get all users
 		List<User> users = getUsers();
 		
 		List<String> userIds = new ArrayList<String>();
 		
-		for(String user : namedUsers) {
-			if (user.startsWith("@")) 
+		// For each user identifier provided
+		for(String userOriginal : namedUsers) {
+			
+			// Trip any leading or training white space as we don't validate this in he dialog
+			String trimmed = userOriginal.trim();
+			
+			if (trimmed.startsWith("@")) 
 			{
-				List<String> ids = users.stream().filter(u -> u.getProfile().getDisplayName().equals(user.substring(1))).map(u -> u.getId()).collect(Collectors.toList());
+				List<String> ids = users.stream().filter(u -> u.getProfile().getDisplayName().equals(trimmed.substring(1))).map(u -> u.getId()).collect(Collectors.toList());
 				
 				if(ids.size() > 1) {
-					throw new Exception("Multiple users with the display name " + user + " were found, please run again using the desired users ID instead of name");
+					throw new Exception("Multiple users with the display name " + trimmed + " were found, please run again using the desired users ID instead of name");
 				}
 				
 				if(ids.size() == 0) {
-					throw new Exception("No user with the display name  " + user + " was found");
+					throw new Exception("No user with the display name  " + trimmed + " was found");
 				}
 				
 				userIds.addAll(ids);
 			}
 			else
 			{
-				userIds.add(user);
+				// If it doesn't start with an '@' we assume it's already a unique identifier
+				userIds.add(trimmed);
 			}
 		}
 		
