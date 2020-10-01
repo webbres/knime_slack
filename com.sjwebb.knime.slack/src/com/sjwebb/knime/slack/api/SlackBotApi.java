@@ -2,6 +2,7 @@ package com.sjwebb.knime.slack.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -433,41 +434,66 @@ public class SlackBotApi
 	 */
 	public List<String> replaceUsernameWithId(String[] namedUsers) throws Exception 
 	{
-		// Get all users
-		List<User> users = getUsers();
-		
 		List<String> userIds = new ArrayList<String>();
 		
-		// For each user identifier provided
-		for(String userOriginal : namedUsers) {
+		if(needsReplacement(namedUsers)) 
+		{
+			// Get all users
+			List<User> users = getUsers();
 			
-			// Trip any leading or training white space as we don't validate this in he dialog
-			String trimmed = userOriginal.trim();
-			
-			if (trimmed.startsWith("@")) 
-			{
-				List<String> ids = users.stream().filter(u -> u.getProfile().getDisplayName().equals(trimmed.substring(1))).map(u -> u.getId()).collect(Collectors.toList());
+			// For each user identifier provided
+			for(String userOriginal : namedUsers) {
 				
-				if(ids.size() > 1) {
-					throw new Exception("Multiple users with the display name " + trimmed + " were found, please run again using the desired users ID instead of name");
+				// Trip any leading or training white space as we don't validate this in he dialog
+				String trimmed = userOriginal.trim();
+				
+				if (trimmed.startsWith("@")) 
+				{
+					List<String> ids = users.stream().filter(u -> u.getProfile().getDisplayName().equals(trimmed.substring(1))).map(u -> u.getId()).collect(Collectors.toList());
+					
+					if(ids.size() > 1) {
+						throw new Exception("Multiple users with the display name " + trimmed + " were found, please run again using the desired users ID instead of name");
+					}
+					
+					if(ids.size() == 0) {
+						throw new Exception("No user with the display name  " + trimmed + " was found");
+					}
+					
+					userIds.addAll(ids);
 				}
-				
-				if(ids.size() == 0) {
-					throw new Exception("No user with the display name  " + trimmed + " was found");
+				else
+				{
+					// If it doesn't start with an '@' we assume it's already a unique identifier
+					userIds.add(trimmed);
 				}
-				
-				userIds.addAll(ids);
-			}
-			else
-			{
-				// If it doesn't start with an '@' we assume it's already a unique identifier
-				userIds.add(trimmed);
-			}
+			}	
+		} else {
+			userIds = Arrays.asList(namedUsers);
 		}
+		
+		
 		
 		return userIds;
 	}
 	
+	/**
+	 * Identify if the any display names need replacing with user ids
+	 * @param namedUsers
+	 * @return
+	 */
+	private boolean needsReplacement(String[] namedUsers) 
+	{
+		boolean foundDisplayName = false;
+		
+		for(int i = 0; i < namedUsers.length && !foundDisplayName; i++)
+		{
+			if(namedUsers[i].trim().startsWith("@"))
+				foundDisplayName = true;
+		}
+		
+		return foundDisplayName;
+	}
+
 	public MetricsDatastore getMetrics() 
 	{
 		return this.slack.getConfig().getMethodsConfig().getMetricsDatastore();
