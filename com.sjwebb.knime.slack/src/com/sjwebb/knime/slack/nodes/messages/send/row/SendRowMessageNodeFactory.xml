@@ -21,6 +21,13 @@
        		provide the username to post the message as.
        	</p>
         
+        
+        <p>
+        	<b>Rate Limiting: </b>
+        	The underlying <a href="https://slack.dev/java-slack-sdk/guides/web-api-basics">Java Slack API</a> offers an async approach where it attempts to manage Rate Limits on API requests. 
+        	This node node uses the aysnc version of the method and will send approximately 1 message per second.
+        </p>
+        
         </intro>
         
         
@@ -29,7 +36,9 @@
         <option name="Message">The message content to send.</option>
         <option name="Set username">Whether to use the custom provided username instead of bot name.</option>
         <option name="Username">A custom username to set, this will overide the default bot name. Ignored if Set username is not checked.</option>
-
+        
+        
+        <option name="Lookup conversation">If checked will lookup the conversation matching the channel name and pass on the channel ID otherwise passes the channel name directly to the API call</option>
     </fullDescription>
     
     <ports>
