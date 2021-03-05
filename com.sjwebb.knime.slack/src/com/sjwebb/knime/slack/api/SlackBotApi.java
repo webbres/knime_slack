@@ -2,19 +2,31 @@ package com.sjwebb.knime.slack.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
+import org.knime.core.node.NodeLogger;
 
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.Slack;
+import com.slack.api.SlackConfig;
+import com.slack.api.app_backend.config.SlackAppConfig;
+import com.slack.api.methods.metrics.MetricsDatastore;
+import com.slack.api.methods.metrics.impl.MemoryMetricsDatastore;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest.ChatPostMessageRequestBuilder;
 import com.slack.api.methods.request.conversations.ConversationsListRequest;
 import com.slack.api.methods.request.conversations.ConversationsListRequest.ConversationsListRequestBuilder;
 import com.slack.api.methods.request.users.UsersListRequest;
 import com.slack.api.methods.request.users.UsersListRequest.UsersListRequestBuilder;
+import com.slack.api.methods.request.users.UsersLookupByEmailRequest;
+import com.slack.api.methods.request.users.UsersLookupByEmailRequest.UsersLookupByEmailRequestBuilder;
 import com.slack.api.methods.response.auth.AuthTestResponse;
+import com.slack.api.methods.response.channels.UsersLookupByEmailResponse;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.slack.api.methods.response.conversations.ConversationsListResponse;
@@ -33,7 +45,7 @@ import com.slack.api.model.User;
  */
 public class SlackBotApi 
 {
-
+	
 	private Slack slack;
 
 	private String token;
@@ -41,11 +53,17 @@ public class SlackBotApi
 	private static final int DEFAULT_LIMIT = 200;
 	private static final int MAX_LIMIT = 1000;
 
-	public SlackBotApi(String token) {
-		this.slack = Slack.getInstance();
+	protected SlackBotApi(String token) {
+		SlackConfig config = new SlackConfig();
+//		config.getMethodsConfig().setMetricsDatastore(SlackBotApiFactory.getStoreForToken(token));
+		this.slack = Slack.getInstance(config);
 		this.token = token;
 	}
 
+//	public void setDataStore(MemoryMetricsDatastore storeForToken) {
+//		this.slack.getConfig().getMethodsConfig().setMetricsDatastore(storeForToken);
+//	}
+	
 	/**
 	 * Call check auth: https://api.slack.com/methods/auth.test 
 	 * @return	The user authenticated as
@@ -151,18 +169,20 @@ public class SlackBotApi
 				
 		UsersListRequestBuilder builder = UsersListRequest.builder().token(token).limit(DEFAULT_LIMIT);
 		
-		UsersListResponse respone = slack.methods().usersList(builder.build());
+		CompletableFuture<UsersListResponse> future = slack.methodsAsync().usersList(builder.build());
 		
-		if(!respone.isOk())
+		UsersListResponse response = future.get();
+		
+		if(!response.isOk())
 		{
-			throw new Exception(respone.getError() + " - needed: " + respone.getNeeded());
+			throw new Exception(response.getError() + " - needed: " + response.getNeeded());
 		}
 		
-		List<User> users = respone.getMembers();
+		List<User> users = response.getMembers();
 		
 		
 		// Now progress the cursor if exists
-		String cursor = respone.getResponseMetadata().getNextCursor();
+		String cursor = response.getResponseMetadata().getNextCursor();
 		
 		while(cursor != null && !cursor.equals("")) {
 			builder = builder.cursor(cursor);
@@ -237,7 +257,7 @@ public class SlackBotApi
 	}
 
 	
-	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws KnimeSlackException, Exception
+	public ChatPostMessageResponse sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws KnimeSlackException, Exception
 	{
 		return sendMessageToChannel(channel, message, username, iconUrl, iconEmoji, true);
 	}
@@ -252,10 +272,30 @@ public class SlackBotApi
 	 * @throws Exception 
 	 * @throws KnimeSlackException 
 	 */
-	public String sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
-	{
+	public ChatPostMessageResponse sendMessageToChannel(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
+	{	
+		ChatPostMessageRequestBuilder builder = configureChannelMessageBuilder(channel, message, username, iconUrl, iconEmoji, lookupConversation);
+		
+		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+	public CompletableFuture<ChatPostMessageResponse> sendMessageToChannelAsync(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws KnimeSlackException, Exception
+	{	
+		ChatPostMessageRequestBuilder builder = configureChannelMessageBuilder(channel, message, username, iconUrl, iconEmoji, lookupConversation);
+		
+		CompletableFuture<ChatPostMessageResponse>	postResponse = slack.methodsAsync().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+
+	private ChatPostMessageRequestBuilder configureChannelMessageBuilder(String channel, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji, boolean lookupConversation) throws Exception {
 		String channelName;
 		
+		// If looking up a conversation we get all available conversations and then search the list based on the provided
+		// channel name and then use the channels ID to post the message to. Otherwise we use the channel name directly.
 		if(lookupConversation) 
 		{			
 			Conversation conversation = getConversations(false, true).stream()
@@ -280,24 +320,7 @@ public class SlackBotApi
 		if(iconEmoji.isPresent())
 			builder.iconEmoji(iconEmoji.get());
 		
-
-		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
-
-		
-		if(!postResponse.isOk())
-		{
-			if(postResponse.getError().equals("missing_scope")) {
-				throw new IOException("Failed to post message: " + postResponse.getError() + " " + postResponse.getNeeded());
-			} else {
-				throw new IOException("Failed to post message: " + postResponse.getError());
-			}
-
-		}
-			
-		
-		String messageTs = postResponse.getMessage().getTs();
-		
-		return messageTs;
+		return builder;
 	}
 
 	/**
@@ -326,19 +349,67 @@ public class SlackBotApi
 	 */
 	public ChatPostMessageResponse directMessage(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
 	{
-		
 		String[] users = user.trim().replace(", ", ",").split(",");
 		
-		List<String> usersIds = replaceWithId(users);
+		List<String> usersIds = replaceUsernameWithId(users);
+		
+		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(usersIds, message, username, iconUrl, iconEmoji);
+
+		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+	/**
+	 * Performs the same call as {@link #directMessage(String, String, Optional, Optional, Optional)} but uses the async method to attempt to respect API Rate Limits
+	 * @param user
+	 * @param message
+	 * @param username
+	 * @param iconUrl
+	 * @param iconEmoji
+	 * @return
+	 * @throws Exception
+	 * @deprecated Should call {@link #directMessageAsync(List, String, Optional, Optional, Optional)} having already handled the users string
+	 */
+	public CompletableFuture<ChatPostMessageResponse> directMessageAsync(String user, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
+	{
+		String[] users = user.trim().replace(", ", ",").split(",");
+		
+		List<String> usersIds = replaceUsernameWithId(users);
+
+		return directMessageAsync(usersIds, message, username, iconUrl, iconEmoji);
+	}
+	
+	/**
+	 * Performs the same call as {@link #directMessage(String, String, Optional, Optional, Optional)} but uses the async method to attempt to respect API Rate Limits
+	 * @param user
+	 * @param message
+	 * @param username
+	 * @param iconUrl
+	 * @param iconEmoji
+	 * @return
+	 * @throws Exception
+	 */
+	public CompletableFuture<ChatPostMessageResponse> directMessageAsync(List<String> usersIds, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
+	{	
+		ChatPostMessageRequestBuilder builder = buildChatMessageToUser(usersIds, message, username, iconUrl, iconEmoji);
+		
+
+		CompletableFuture<ChatPostMessageResponse>	postResponse = slack.methodsAsync().chatPostMessage(builder.build());
+
+		return postResponse;
+	}
+	
+	private ChatPostMessageRequestBuilder buildChatMessageToUser(List<String> usersIds, String message, Optional<String> username, Optional<String> iconUrl, Optional<String> iconEmoji) throws Exception
+	{
 		
 		ConversationsOpenResponse response = slack.methods().conversationsOpen(req -> req.token(token).returnIm(true).users(usersIds));
 		
 		if(!response.isOk()) {
 			String error = response.getError() + " - " + (response.getNeeded() != null ? " needed: " + response.getNeeded() : "");
-			throw new IOException("Failed to open conversation with user (" +  user + ")" + error);
+			throw new IOException("Failed to open conversation with user (" +  usersIds.toString() + ")" + error);
 		}
 			
-		
 		ChatPostMessageRequestBuilder builder = ChatPostMessageRequest.builder().token(token).channel(response.getChannel().getId()).text(message);
 		
 		if(username.isPresent())
@@ -350,17 +421,10 @@ public class SlackBotApi
 		if(iconEmoji.isPresent())
 			builder.iconEmoji(iconEmoji.get());
 		
-
-		ChatPostMessageResponse	postResponse = slack.methods().chatPostMessage(builder.build());
-
-
-		if(!postResponse.isOk()) {
-			String error = response.getError() + " - " + postResponse.getMessage() + (postResponse.getNeeded() != null ? " needed: " + postResponse.getNeeded() : "");
-			throw new IOException("Failed to send message to user (" +  user + ")" + error);
-		}
-			
-		return postResponse;
+		return builder;
 	}
+	
+	
 
 	/**
 	 * Return a new list of usernames having replace display names (@Name1, @Name2) with the unique slack username
@@ -368,34 +432,88 @@ public class SlackBotApi
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> replaceWithId(String[] namedUsers) throws Exception 
+	public List<String> replaceUsernameWithId(String[] namedUsers) throws Exception 
 	{
-		List<User> users = getUsers();
-		
 		List<String> userIds = new ArrayList<String>();
 		
-		for(String user : namedUsers) {
-			if (user.startsWith("@")) 
-			{
-				List<String> ids = users.stream().filter(u -> u.getProfile().getDisplayName().equals(user.substring(1))).map(u -> u.getId()).collect(Collectors.toList());
+		if(needsReplacement(namedUsers)) 
+		{
+			// Get all users
+			List<User> users = getUsers();
+			
+			// For each user identifier provided
+			for(String userOriginal : namedUsers) {
 				
-				if(ids.size() > 1) {
-					throw new Exception("Multiple users with the display name " + user + " were found, please run again using the desired users ID instead of name");
+				// Trip any leading or training white space as we don't validate this in he dialog
+				String trimmed = userOriginal.trim();
+				
+				if (trimmed.startsWith("@")) 
+				{
+					List<String> ids = users.stream().filter(u -> u.getProfile().getDisplayName().equals(trimmed.substring(1))).map(u -> u.getId()).collect(Collectors.toList());
+					
+					if(ids.size() > 1) {
+						throw new Exception("Multiple users with the display name " + trimmed + " were found, please run again using the desired users ID instead of name");
+					}
+					
+					if(ids.size() == 0) {
+						throw new Exception("No user with the display name  " + trimmed + " was found");
+					}
+					
+					userIds.addAll(ids);
 				}
-				
-				if(ids.size() == 0) {
-					throw new Exception("No user with the display name  " + user + " was found");
+				else
+				{
+					// If it doesn't start with an '@' we assume it's already a unique identifier
+					userIds.add(trimmed);
 				}
-				
-				userIds.addAll(ids);
-			}
-			else
-			{
-				userIds.add(user);
-			}
+			}	
+		} else {
+			userIds = Arrays.asList(namedUsers);
 		}
+		
+		
 		
 		return userIds;
 	}
+	
+	/**
+	 * Identify if the any display names need replacing with user ids
+	 * @param namedUsers
+	 * @return
+	 */
+	private boolean needsReplacement(String[] namedUsers) 
+	{
+		boolean foundDisplayName = false;
+		
+		for(int i = 0; i < namedUsers.length && !foundDisplayName; i++)
+		{
+			if(namedUsers[i].trim().startsWith("@"))
+				foundDisplayName = true;
+		}
+		
+		return foundDisplayName;
+	}
 
+	public MetricsDatastore getMetrics() 
+	{
+		return this.slack.getConfig().getMethodsConfig().getMetricsDatastore();
+	}
+
+	/**
+	 * Lookup a user by email. Uses an async call and waits for the response.
+	 * @param email
+	 * @return
+	 * @throws Exception
+	 */
+	public UsersLookupByEmailResponse getUser(String email) throws Exception
+	{
+		
+		UsersLookupByEmailRequestBuilder req = UsersLookupByEmailRequest.builder().token(token).email(email);
+		
+		CompletableFuture<UsersLookupByEmailResponse> future = slack.methodsAsync().usersLookupByEmail(req.build());
+		
+		UsersLookupByEmailResponse response = future.get();
+		
+		return response;
+	}
 }

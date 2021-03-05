@@ -20,7 +20,7 @@ import org.knime.core.node.InvalidSettingsException;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
-import com.sjwebb.knime.slack.util.SlackBotApiFactory;
+import com.sjwebb.knime.slack.util.KnimeSettingsSlackBotApiFactory;
 import com.sjwebb.knime.slack.util.SlackOathTokenSettings;
 import com.slack.api.model.Conversation;
 
@@ -47,7 +47,7 @@ public class GetChannelsNodeModel extends LocalSettingsNodeModel<SlackOathTokenS
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
 			throws Exception {
 
-		SlackBotApi api = SlackBotApiFactory.createFromSettings(localSettings);
+		SlackBotApi api = KnimeSettingsSlackBotApiFactory.createFromSettings(localSettings);
 
 //		List<Channel> channels = api.getChannelList();
 		List<Conversation> conversations = api.getConversations(false, true);
