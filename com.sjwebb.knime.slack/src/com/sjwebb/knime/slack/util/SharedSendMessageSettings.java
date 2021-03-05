@@ -97,7 +97,7 @@ public class SharedSendMessageSettings extends SlackOathTokenSettings
 			}
 		});
 				
-		addSetting(CONFIG_LOOKUP, new SettingsModelBoolean(CONFIG_LOOKUP, true));
+		addSetting(CONFIG_LOOKUP, new SettingsModelBoolean(CONFIG_LOOKUP, false));
 	}
 
 	public Optional<String> getOptionalUsername()

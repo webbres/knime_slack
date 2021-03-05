@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./slack.png" type="Source" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Slack Users Lookup By Email</name>
+    
+    <shortDescription>
+        Lookup a user by email
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+        	Looks up the details for a Slack user given one or more email addresses by calling the <a href="https://api.slack.com/methods/users.lookupByEmail">users.lookupByEmail</a>
+        	API method.
+        	<br></br><br></br>
+        	<b>This node requires the users:read.email scope</b>
+        	<br></br>
+	       	<p>
+	        	<b>Rate Limiting: </b>
+	        	The underlying <a href="https://slack.dev/java-slack-sdk/guides/web-api-basics">Java Slack API</a> offers an async approach where it attempts to manage Rate Limits on API requests. 
+	        	This node node uses the aysnc version of the method and will allow approximated 50+ requests per minute for the 'Web API Tier 3' call. This node does not guarantee it was catch
+	        	all rate limiting requirements. If you exceed the rate limits some calls may fail regardless.
+	        </p>
+        </intro>
+        
+        
+        <option name="Bot OAuth token">The OAth token of the bot to post as</option>
+        <option name="Email">A column with email addresses.</option>
+
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Email">A table with a column detailing the emails of the users to retrieve details for.</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Slack user details">Slack user details appended for each email that a user was found for. Missing columns appended if no user found.</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+
+</knimeNode>

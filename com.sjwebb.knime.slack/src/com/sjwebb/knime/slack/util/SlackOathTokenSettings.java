@@ -40,7 +40,7 @@ public class SlackOathTokenSettings extends NodeSettingCollection {
 	 */
 	private String getPreferenceOAuthToken() 
 	{
-		return SlackBotApiFactory.getDefaultOAuthToken();
+		return KnimeSettingsSlackBotApiFactory.getDefaultOAuthToken();
 	}
 	
 	/**

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <knimeNode icon="./slack.png" type="Other" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
-    <name>Message Slack User (beta)</name>
+    <name>Message Slack User</name>
     
     <shortDescription>
         Send a direct message to a KNIME user
@@ -14,7 +14,8 @@
 				Users should ideally be identified by their unique ID which looks something like 'U011N55HKCL', these IDs can be fetched with the Get Users node. 
 				It is however possible to provide the display name in the same way you would identify a user when messaging in the slack app, for example @Person for
 				the user with the display name of 'Person' - the @ must be included to indicate it's a display name and not an ID.  Display names <b>are not unique</b> 
-				and if multiple users with the same display name are found the node will fail.
+				and if multiple users with the same display name are found the node will fail. Please note by providing display names an API call to 
+				<a href="https://api.slack.com/methods/users.list">users.list</a> will be made to enable lookup of the user's unique ID which is a 'Web API Tier 2' method.
 			</p>
 			
 			<p>
@@ -33,6 +34,12 @@
 	       		set a username parameter. If changing the display name / username of the source of the message is desirable then check 'Set username' and 
 	       		provide the username to post the message as. The messages will however appear undo the app regardless of what username is set.
 	       	</p>
+	       	
+	       	<p>
+	        	<b>Rate Limiting: </b>
+	        	The underlying <a href="https://slack.dev/java-slack-sdk/guides/web-api-basics">Java Slack API</a> offers an async approach where it attempts to manage Rate Limits on API requests. 
+	        	This node node uses the aysnc version of the method and will send approximately 1 message per second.
+	        </p>
         
 			
         </intro>

@@ -17,7 +17,7 @@ import org.knime.core.node.InvalidSettingsException;
 
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.util.LocalSettingsNodeModel;
-import com.sjwebb.knime.slack.util.SlackBotApiFactory;
+import com.sjwebb.knime.slack.util.KnimeSettingsSlackBotApiFactory;
 import com.sjwebb.knime.slack.util.SlackOathTokenSettings;
 import com.slack.api.model.User;
 
@@ -51,7 +51,7 @@ public class GetUsersNodeModel extends LocalSettingsNodeModel<SlackOathTokenSett
 		SlackBotApi api;
 		try 
 		{
-			api = SlackBotApiFactory.createFromSettings(localSettings);
+			api = KnimeSettingsSlackBotApiFactory.createFromSettings(localSettings);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
