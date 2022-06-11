@@ -2,7 +2,6 @@ package com.sjwebb.knime.slack.nodes.metrics;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -28,8 +27,9 @@ import org.knime.core.node.NodeSettingsWO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sjwebb.knime.slack.api.SlackBotApi;
 import com.sjwebb.knime.slack.api.SlackBotApiFactory;
-import com.slack.api.methods.MethodsStats;
-import com.slack.api.methods.metrics.MetricsDatastore;
+import com.slack.api.rate_limits.metrics.MetricsDatastore;
+import com.slack.api.rate_limits.metrics.RequestStats;
+
 
 /**
  * <code>NodeModel</code> for the "SlackMetrics" node.
@@ -69,14 +69,14 @@ public class SlackMetricsNodeModel extends NodeModel
     	{
     		MetricsDatastore metrics = bot.getMetrics();
     		
-    		Map<String, Map<String, MethodsStats>> obj = metrics.getAllStats();
+    		Map<String, Map<String, RequestStats>> obj = metrics.getAllStats();
     		
-    		for (Entry<String, Map<String, MethodsStats>> element : obj.entrySet()) 
+    		for (Entry<String, Map<String, RequestStats>> element : obj.entrySet()) 
     		{
-    			for(Entry<String, MethodsStats> team : element.getValue().entrySet())
+    			for(Entry<String, RequestStats> team : element.getValue().entrySet())
     			{
     				String name = team.getKey();
-    				MethodsStats stats = team.getValue();
+    				RequestStats stats = team.getValue();
     				
     				String json = objectMapper.writeValueAsString(stats);
     				
