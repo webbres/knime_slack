@@ -15,8 +15,6 @@ import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.Slack;
 import com.slack.api.SlackConfig;
 import com.slack.api.app_backend.config.SlackAppConfig;
-import com.slack.api.methods.metrics.MetricsDatastore;
-import com.slack.api.methods.metrics.impl.MemoryMetricsDatastore;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest.ChatPostMessageRequestBuilder;
 import com.slack.api.methods.request.conversations.ConversationsListRequest;
@@ -26,15 +24,17 @@ import com.slack.api.methods.request.users.UsersListRequest.UsersListRequestBuil
 import com.slack.api.methods.request.users.UsersLookupByEmailRequest;
 import com.slack.api.methods.request.users.UsersLookupByEmailRequest.UsersLookupByEmailRequestBuilder;
 import com.slack.api.methods.response.auth.AuthTestResponse;
-import com.slack.api.methods.response.channels.UsersLookupByEmailResponse;
+
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.slack.api.methods.response.conversations.ConversationsListResponse;
 import com.slack.api.methods.response.conversations.ConversationsOpenResponse;
 import com.slack.api.methods.response.users.UsersListResponse;
+import com.slack.api.methods.response.users.UsersLookupByEmailResponse;
 import com.slack.api.model.Conversation;
 import com.slack.api.model.ConversationType;
 import com.slack.api.model.User;
+import com.slack.api.rate_limits.metrics.MetricsDatastore;
 
 /**
  * Slack API calls
@@ -510,6 +510,7 @@ public class SlackBotApi
 		
 		UsersLookupByEmailRequestBuilder req = UsersLookupByEmailRequest.builder().token(token).email(email);
 		
+
 		CompletableFuture<UsersLookupByEmailResponse> future = slack.methodsAsync().usersLookupByEmail(req.build());
 		
 		UsersLookupByEmailResponse response = future.get();
