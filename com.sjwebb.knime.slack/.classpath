@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-13.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-1.4.10.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-common-1.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-1.4.32.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-common-1.4.32.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okhttp-4.9.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okio-2.8.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slack-api-client-1.22.2.jar"/>
