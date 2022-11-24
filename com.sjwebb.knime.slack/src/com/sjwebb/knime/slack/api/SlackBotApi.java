@@ -6,15 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import org.knime.core.node.NodeLogger;
 
 import com.sjwebb.knime.slack.exception.KnimeSlackException;
 import com.slack.api.Slack;
 import com.slack.api.SlackConfig;
-import com.slack.api.app_backend.config.SlackAppConfig;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest.ChatPostMessageRequestBuilder;
 import com.slack.api.methods.request.conversations.ConversationsListRequest;

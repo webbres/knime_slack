@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-1.6.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-common-1.6.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-13.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/okhttp-4.9.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/okio-2.8.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/slack-api-client-1.22.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/slack-api-model-1.22.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/slack-app-backend-1.22.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-1.6.20.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-common-1.5.31.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-jdk7-1.5.31.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/kotlin-stdlib-jdk8-1.5.31.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/okhttp-4.10.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/okio-jvm-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/slack-api-client-1.27.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/slack-api-model-1.27.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
