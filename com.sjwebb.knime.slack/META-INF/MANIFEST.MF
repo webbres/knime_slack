@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Slack Integration - Node extension for KNIME Workbench
 Bundle-SymbolicName: com.sjwebb.knime.slack;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-ClassPath: .,
  libs/annotations-13.0.jar,
  libs/kotlin-stdlib-1.6.20.jar,
