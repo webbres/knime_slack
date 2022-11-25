@@ -2,16 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Slack Integration - Node extension for KNIME Workbench
 Bundle-SymbolicName: com.sjwebb.knime.slack;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-ClassPath: .,
  libs/annotations-13.0.jar,
- libs/okhttp-4.9.3.jar,
- libs/okio-2.8.0.jar,
- libs/slack-api-client-1.22.2.jar,
- libs/slack-api-model-1.22.2.jar,
- libs/slack-app-backend-1.22.2.jar,
- libs/kotlin-stdlib-1.6.21.jar,
- libs/kotlin-stdlib-common-1.6.21.jar
+ libs/kotlin-stdlib-1.7.21.jar,
+ libs/kotlin-stdlib-common-1.7.21.jar,
+ libs/kotlin-stdlib-jdk7-1.7.21.jar,
+ libs/kotlin-stdlib-jdk8-1.7.21.jar,
+ libs/okhttp-4.10.0.jar,
+ libs/okio-jvm-3.0.0.jar,
+ libs/slack-api-client-1.27.1.jar,
+ libs/slack-api-model-1.27.1.jar
 Bundle-Activator: com.sjwebb.knime.slack.plugin.GetChannelsNodePlugin
 Bundle-Vendor: Samuel Webb
 Require-Bundle: org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
