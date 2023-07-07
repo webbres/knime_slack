@@ -3,3 +3,5 @@
 com\.sjwebb\.knime\.slack/bin/
 
 com\.sjwebb\.knime\.slack\.test/bin/
+target/
+.polyglot.*
