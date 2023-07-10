@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
    <feature id="com.sjwebb.knime.slack.feature" version="0.0.0">
-       <category name="knime-slack" />
+      <category name="knime-slack"/>
    </feature>
-   <feature id="com.sjwebb.knime.slack.testing.feature" version="0.0.0">
-       <category name="knime-slack" />
-   </feature>
-
    <category-def name="knime-slack" label="knime-slack">
-       <description>Build artifacts from knime-slack</description>
+      <description>
+         Build artifacts from knime-slack
+      </description>
    </category-def>
 </site>
