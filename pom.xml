@@ -23,9 +23,12 @@
 	<modules>
 		<module>com.sjwebb.knime.slack</module>
 		<module>com.sjwebb.knime.slack.feature</module>
+		<module>com.sjwebb.knime.slack.update</module>
+		
+		<!-- Testing current all done as test workflows
 		<module>com.sjwebb.knime.slack.test</module>
 		<module>com.sjwebb.knime.slack.testing.feature</module>
-		<module>com.sjwebb.knime.slack.update</module>
+		-->
 	</modules>
 
 	<!-- List the update sites providing dependencies for your projects here -->
